@@ -1,7 +1,11 @@
-import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
 import Homepage from './component/homepage';
+import Filter from './component/filter';
 
 export default function App() {
+  const [openFilter, setopenFilter] = useState(false);
+
   return (
     <View style={styles.container}>
       {/* Navbar */}
@@ -11,18 +15,32 @@ export default function App() {
           <Text style={styles.navbar_logo_text}>Eat Arai Dee</Text>
         </View>
         <View style={styles.navbar_icon}>
-          <Image
-            source={require('./image/filter.png')}
-            style={styles.navbar_icon_filter} />
-          <Image
-            source={require('./image/profile.png')}
-            style={styles.navbar_icon_profile} />
+          <TouchableOpacity onPress={() => setopenFilter(true)}>
+            <Image
+              source={require('./image/filter.png')}
+              style={styles.navbar_icon_filter} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setopenSetting(true)}>
+            <Image
+              source={require('./image/profile.png')}
+              style={styles.navbar_icon_profile} />
+          </TouchableOpacity>
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scollContent}>
-        <Homepage />
-      </ScrollView>
+      {openFilter ? 
+        (
+          <ScrollView contentContainerStyle={styles.scollContent}>
+            <Filter closeFilter={() => setopenFilter(false)} />
+          </ScrollView>
+        )
+        : 
+        (
+          <ScrollView contentContainerStyle={styles.scollContent}>
+            <Homepage />
+          </ScrollView>
+        )
+      }
 
 
     </View>
