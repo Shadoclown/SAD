@@ -1,6 +1,78 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 
+const restaurantMenus = {
+    "Pizza Restaurant": [
+        {
+            id: 1,
+            name: "Margherita Pizza",
+            description: "Classic pizza with fresh mozzarella, tomatoes, and basil.",
+            price: "$12.99",
+            image: require('../image/margherita_pizza.jpg'),
+        },
+        {
+            id: 2,
+            name: "Pepperoni Pizza",
+            description: "Topped with pepperoni slices and melted cheese.",
+            price: "$14.99",
+            image: require('../image/pepperoni_pizza.jpg'),
+        },
+        {
+            id: 3,
+            name: "Veggie Pizza",
+            description: "Loaded with fresh vegetables and mozzarella cheese.",
+            price: "$13.99",
+            image: require('../image/veggie_pizza.jpg'),
+        },
+    ],
+    "Sushi Place": [
+        {
+            id: 1,
+            name: "California Roll",
+            description: "Crab, avocado, and cucumber rolled in seaweed and rice.",
+            price: "$8.99",
+            image: require('../image/california_roll.jpg'),
+        },
+        {
+            id: 2,
+            name: "Spicy Tuna Roll",
+            description: "Fresh tuna with spicy mayo and cucumber.",
+            price: "$10.99",
+            image: require('../image/spicy_tuna_roll.jpg'),
+        },
+        {
+            id: 3,
+            name: "Salmon Nigiri",
+            description: "Fresh salmon served over sushi rice.",
+            price: "$12.99",
+            image: require('../image/salmon_nigiri.jpg'),
+        },
+    ],
+    "Burger Joint": [
+        {
+            id: 1,
+            name: "Classic Cheeseburger",
+            description: "Beef patty with cheddar cheese, lettuce, and tomato.",
+            price: "$9.99",
+            image: require('../image/classic_cheeseburger.jpg'),
+        },
+        {
+            id: 2,
+            name: "Bacon Burger",
+            description: "Juicy beef patty topped with crispy bacon and cheese.",
+            price: "$11.99",
+            image: require('../image/bacon_burger.jpg'),
+        },
+        {
+            id: 3,
+            name: "Veggie Burger",
+            description: "Grilled veggie patty with lettuce, tomato, and avocado.",
+            price: "$10.99",
+            image: require('../image/veggie_burger.jpg'),
+        },
+    ],
+};
+
 function Card({ name, distance, rating, price, spiceLevel, category, image }) {
     const [ViewMore, setViewMore] = useState(false);
     const [ViewDetail, setViewDetail] = useState("detail");
@@ -62,42 +134,53 @@ function Card({ name, distance, rating, price, spiceLevel, category, image }) {
                 </View>
 
                 {ViewMore && (
-                    ViewDetail === "detail" ? (
-                        <View style={styles.view_more_detail}>
-                            <View style={styles.horizontal_line} />
-                            <Text style={styles.location_text}>Location</Text>
-                            <Image 
-                                source={require('../image/location.jpg')} 
-                                style={styles.location_image} 
-                            />
+                    <View style={styles.view_more_detail}>
+                        <View style={styles.horizontal_line} />
+                        {ViewDetail === "detail" ? (
+                            <>
+                                <Text style={styles.location_text}>Location</Text>
+                                <Image
+                                    source={require('../image/location.jpg')}
+                                    style={styles.location_image}
+                                />
+                            </>
+                        ) : (
+                            <>
+                                <Text style={styles.menu_text}>Menu</Text>
+                                {(restaurantMenus[name] || []).map((item) => (
+                                    <View key={item.id} style={styles.menu_item}>
+                                        <Image source={item.image} style={styles.menu_item_image} />
+                                        <View style={styles.menu_item_details}>
+                                            <Text style={styles.menu_item_name}>{item.name}</Text>
+                                            {/* <Text style={styles.menu_item_description}>{item.description}</Text> */}
+                                            <Text style={styles.menu_item_price}>{item.price}</Text>
+                                        </View>
+                                    </View>
+                                ))}
+                            </>
+                        )}
+                        <View style={[styles.horizontal_line]} />
+                        <View style={styles.detail_menu_button}>
+                            <TouchableOpacity
+                                style={styles.detail_button}
+                                onPress={() => setViewDetail("detail")}
+                            >
+                                <Text style={styles.detail_button_text}>Detail</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.menu_button}
+                                onPress={() => setViewDetail("menu")}
+                            >
+                                <Text style={styles.menu_button_text}>Menu</Text>
+                            </TouchableOpacity>
                         </View>
-                    ) : null
-                )}
-
-                {ViewMore && (
-                    <View style={[styles.horizontal_line]} />
-                )}
-                {ViewMore && (
-                    <View style={styles.detail_menu_button}>
-                        <TouchableOpacity
-                            style={styles.detail_button}
-                            onPress={() => setViewDetail("detail")}
-                        >
-                            <Text style={styles.detail_button_text}>Detail</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.menu_button}
-                            onPress={() => setViewDetail("menu")}
-                        >
-                            <Text style={styles.menu_button_text}>Menu</Text>
-                        </TouchableOpacity>
                     </View>
                 )}
 
                 <View style={styles.view_detail}>
                     <TouchableOpacity
                         style={styles.view_detail_button}
-                        onPress={() => setViewMore(!ViewMore)} // Toggle the expanded state
+                        onPress={() => setViewMore(!ViewMore)}
                     >
                         <Text style={styles.view_detail_text}>
                             {ViewMore ? 'Hide Details' : 'View Details'}
@@ -268,6 +351,37 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    menu_text: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    menu_item: {
+        flexDirection: 'row',
+        marginBottom: 10,
+    },
+    menu_item_image: {
+        width: 50,
+        height: 50,
+        borderRadius: 5,
+        marginRight: 10,
+    },
+    menu_item_details: {
+        flex: 1,
+    },
+    menu_item_name: {
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
+    menu_item_description: {
+        fontSize: 12,
+        color: '#555',
+    },
+    menu_item_price: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        color: '#333',
     },
 });
 
