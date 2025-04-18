@@ -14,7 +14,9 @@ export default function App() {
           <Image
             source={require('./image/filter.png')}
             style={styles.navbar_icon_filter} />
-          <Text>profile</Text>
+          <Image
+            source={require('./image/profile.png')}
+            style={styles.navbar_icon_profile} />
         </View>
       </View>
 
@@ -24,6 +26,12 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  root: {
+    backgroundColor: '#fff',
+    blue_backgroundColor: 'lightblue',
+    blue_textColor: 'lightblue',
+    fontFamily: 'sans-serif',
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -65,7 +73,11 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     backgroundColor: 'lightblue',
-    padding: 5,
+    padding: 8,
     borderRadius: 50
+  },
+  navbar_icon_profile: {
+    width: 40,
+    height: 40,
   },
 });
