@@ -165,7 +165,7 @@ function Card({ name, distance, rating, price, spiceLevel, category, image }) {
                                 style={styles.detail_button}
                                 onPress={() => setViewDetail("detail")}
                             >
-                                <Text style={styles.detail_button_text}>Detail</Text>
+                                <Text style={styles.detail_button_text}>Detail</Text> 
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={styles.menu_button}
@@ -180,7 +180,7 @@ function Card({ name, distance, rating, price, spiceLevel, category, image }) {
                 <View style={styles.view_detail}>
                     <TouchableOpacity
                         style={styles.view_detail_button}
-                        onPress={() => setViewMore(!ViewMore)}
+                        onPress={() => [setViewMore(!ViewMore), setViewDetail("detail")]}
                     >
                         <Text style={styles.view_detail_text}>
                             {ViewMore ? 'Hide Details' : 'View Details'}
