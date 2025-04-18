@@ -1,11 +1,24 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
+import Homepage from './component/homepage';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      {/* Navbar */}
+      <View style={styles.navbar}>
+        <View style={styles.navbar_logo}>
+          <Text style={styles.navbar_logo_E}> E </Text>
+          <Text style={styles.navbar_logo_text}>Eat Arai Dee</Text>
+        </View>
+        <View style={styles.navbar_icon}>
+          <Image
+            source={require('./image/filter.png')}
+            style={styles.navbar_icon_filter} />
+          <Text>profile</Text>
+        </View>
+      </View>
+
+      <Homepage />
     </View>
   );
 }
@@ -14,7 +27,45 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    marginTop: 50
+  },
+  navbar: {
+    width: '100%',
+    height: '2vh',
+    backgroundColor: '#f8f8f8',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
+    padding: 10,
+  },
+  navbar_logo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+    gap: 5,
+  },
+  navbar_logo_E: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    padding: 5,
+    backgroundColor: 'lightblue',
+    borderRadius: 5,
+  },
+  navbar_logo_text: {
+  },
+  navbar_icon: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 20,
+  },
+  navbar_icon_filter: {
+    width: 40,
+    height: 40,
+    backgroundColor: 'lightblue',
+    padding: 5,
+    borderRadius: 50
   },
 });
