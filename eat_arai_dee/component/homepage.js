@@ -1,9 +1,43 @@
 import { StyleSheet, Text, View, Image } from 'react-native';
+import React from 'react';
+import Card from './card';
 
 function Homepage() {
+    const restaurants = [
+        {
+            id: 1,
+            name: 'Pizza Restaurant',
+            distance: '2.5 km',
+            rating: 4.5,
+            price: '$$$',
+            spiceLevel: 3,
+            category: ['Pizza', 'Italian', 'Fast Food'],
+            image: require('../image/pizza_restuarant.jpg'),
+        },
+        {
+            id: 2,
+            name: 'Sushi Place',
+            distance: '1.2 km',
+            rating: 4.8,
+            price: '$$$$',
+            spiceLevel: 1,
+            category: ['Sushi', 'Japanese'],
+            image: require('../image/sushi_restuarant.jpg'),
+        },
+        {
+            id: 3,
+            name: 'Burger Joint',
+            distance: '3.0 km',
+            rating: 4.2,
+            price: '$$',
+            spiceLevel: 2,
+            category: ['Burgers', 'Fast Food'],
+            image: require('../image/burger_restuarant.jpg'),
+        },
+    ];
+
     return (
         <View style={styles.homepage}>
-
             <View style={styles.tri_icon}>
                 <View style={styles.utensil_icon}>
                     <Image source={require('../image/utensil_icon.png')} style={styles.utensil_icon_image} />
@@ -33,6 +67,21 @@ function Homepage() {
             <View style={styles.homepage_random}>
                 <Text style={styles.random_button}>Random Restaurant</Text>
             </View>
+
+            <Text style={{fontSize:30, marginTop:20, fontWeight:'bold' }}>Recommendation</Text>
+
+            {restaurants.map((restaurant) => (
+                <Card
+                    key={restaurant.id}
+                    name={restaurant.name}
+                    distance={restaurant.distance}
+                    rating={restaurant.rating}
+                    price={restaurant.price}
+                    spiceLevel={restaurant.spiceLevel}
+                    category={restaurant.category}
+                    image={restaurant.image}
+                />
+            ))}
         </View>
     );
 }

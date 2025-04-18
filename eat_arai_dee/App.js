@@ -1,6 +1,5 @@
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 import Homepage from './component/homepage';
-import Card from './component/card';
 
 export default function App() {
   return (
@@ -20,8 +19,12 @@ export default function App() {
             style={styles.navbar_icon_profile} />
         </View>
       </View>
-      {/* <Homepage /> */}
-      <Card />
+
+      <ScrollView contentContainerStyle={styles.scollContent}>
+        <Homepage />
+      </ScrollView>
+
+
     </View>
   );
 }
@@ -34,7 +37,6 @@ const styles = StyleSheet.create({
   navbar: {
     marginTop: 40,
     width: '100%',
-    height: '2vh',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -75,4 +77,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
   },
+  scollContent: {
+    flexGrow: 1,
+    paddingBottom: 20,
+  },
+
 });
