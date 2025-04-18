@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, Image } from 'react-native';
 import Homepage from './component/homepage';
+import Card from './component/card';
 
 export default function App() {
   return (
@@ -19,28 +20,21 @@ export default function App() {
             style={styles.navbar_icon_profile} />
         </View>
       </View>
-
-      <Homepage />
+      {/* <Homepage /> */}
+      <Card />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: {
-    backgroundColor: '#fff',
-    blue_backgroundColor: 'lightblue',
-    blue_textColor: 'lightblue',
-    fontFamily: 'sans-serif',
-  },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    marginTop: 50
+    backgroundColor: 'rgb(223, 240, 255)',
   },
   navbar: {
+    marginTop: 40,
     width: '100%',
     height: '2vh',
-    backgroundColor: '#f8f8f8',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -59,6 +53,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     padding: 5,
     backgroundColor: 'lightblue',
+    color: 'blue',
     borderRadius: 5,
   },
   navbar_logo_text: {
