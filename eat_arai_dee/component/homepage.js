@@ -1,8 +1,11 @@
-import { StyleSheet, Text, View, Image } from 'react-native';
-import React from 'react';
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
 import Card from './card';
 
 function Homepage() {
+    const [selectedFilter, setSelectedFilter] = useState('Individual');
+    const [random, setRandmon] = useState(false);
+
     const restaurants = [
         {
             id: 1,
@@ -56,32 +59,59 @@ function Homepage() {
             </View>
 
             <View style={styles.individual_group_filter}>
-                <View style={styles.individual_filter}>
+                <TouchableOpacity
+                    style={[
+                        styles.individual_filter,
+                        selectedFilter === 'Individual' && styles.selected_filter,
+                    ]}
+                    onPress={() => setSelectedFilter('Individual')}
+                >
                     <Text style={styles.filter_text}>Individual</Text>
-                </View>
-                <View style={styles.group_filter}>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[
+                        styles.group_filter,
+                        selectedFilter === 'Group' && styles.selected_filter,
+                    ]}
+                    onPress={() => setSelectedFilter('Group')}
+                >
                     <Text style={styles.filter_text}>Group</Text>
-                </View>
+                </TouchableOpacity>
             </View>
 
             <View style={styles.homepage_random}>
-                <Text style={styles.random_button}>Random Restaurant</Text>
+                <TouchableOpacity onPress={() => setRandmon(true)}>
+                    <Text style={styles.random_button}>Random Restaurant</Text>
+                </TouchableOpacity>
             </View>
 
-            <Text style={{fontSize:30, marginTop:20, fontWeight:'bold' }}>Recommendation</Text>
-
-            {restaurants.map((restaurant) => (
+            {random ? (
                 <Card
-                    key={restaurant.id}
-                    name={restaurant.name}
-                    distance={restaurant.distance}
-                    rating={restaurant.rating}
-                    price={restaurant.price}
-                    spiceLevel={restaurant.spiceLevel}
-                    category={restaurant.category}
-                    image={restaurant.image}
+                    key={restaurants[2].id}
+                    name={restaurants[2].name}
+                    distance={restaurants[2].distance}
+                    rating={restaurants[2].rating}
+                    price={restaurants[2].price}
+                    spiceLevel={restaurants[2].spiceLevel}
+                    category={restaurants[2].category}
+                    image={restaurants[2].image}
                 />
-            ))}
+            ) : (
+                restaurants.map((restaurant) => (
+                    
+                    <Card
+                        key={restaurant.id}
+                        name={restaurant.name}
+                        distance={restaurant.distance}
+                        rating={restaurant.rating}
+                        price={restaurant.price}
+                        spiceLevel={restaurant.spiceLevel}
+                        category={restaurant.category}
+                        image={restaurant.image}
+                    />
+                ))
+            )}
+            
         </View>
     );
 }
@@ -153,23 +183,25 @@ const styles = StyleSheet.create({
         backgroundColor: 'lightgray',
     },
     individual_filter: {
-        backgroundColor: 'white',
         alignItems: 'center',
         width: 110,
-        paddingBlock: 15,
-        paddingInline: 20,
+        paddingVertical: 15,
+        paddingHorizontal: 20,
         borderRadius: 10,
     },
     group_filter: {
-        backgroundColor: 'white',
         alignItems: 'center',
         width: 110,
-        paddingBlock: 15,
-        paddingInline: 20,
+        paddingVertical: 15,
+        paddingHorizontal: 20,
         borderRadius: 10,
     },
+    selected_filter: {
+        backgroundColor: 'white',
+        color: 'black',
+    },
     filter_text: {
-        color: 'blue',
+        color: 'black',
         fontWeight: 'bold',
     },
     homepage_random: {
