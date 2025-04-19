@@ -2,9 +2,14 @@ import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from 'rea
 import React, { useState } from 'react';
 import Homepage from './component/homepage';
 import Filter from './component/filter';
+import Login from './component/login';
+import Signup from './component/signup';
+import Setting from './component/setting';
+import EditProfile from './component/edit_prfile';
 
 export default function App() {
-  const [openFilter, setopenFilter] = useState(false);
+  const [isPageOpen, setisPageOpen] = useState("Homepage");
+  const [isLogin, setisLogin] = useState(false);
 
   return (
     <View style={styles.container}>
@@ -15,12 +20,12 @@ export default function App() {
           <Text style={styles.navbar_logo_text}>Eat Arai Dee</Text>
         </View>
         <View style={styles.navbar_icon}>
-          <TouchableOpacity onPress={() => setopenFilter(true)}>
+          <TouchableOpacity onPress={() => setisPageOpen("Filter")}>
             <Image
               source={require('./image/filter.png')}
               style={styles.navbar_icon_filter} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setopenSetting(true)}>
+          <TouchableOpacity onPress={() => (!isLogin ? setisPageOpen("Login") : setisPageOpen("Setting"))}>
             <Image
               source={require('./image/profile.png')}
               style={styles.navbar_icon_profile} />
@@ -28,19 +33,41 @@ export default function App() {
         </View>
       </View>
 
-      {openFilter ? 
-        (
-          <ScrollView contentContainerStyle={styles.scollContent}>
-            <Filter closeFilter={() => setopenFilter(false)} />
-          </ScrollView>
-        )
-        : 
-        (
-          <ScrollView contentContainerStyle={styles.scollContent}>
-            <Homepage />
-          </ScrollView>
-        )
-      }
+      {isPageOpen === "Filter" && (
+        <ScrollView contentContainerStyle={styles.scollContent}>
+          <Filter closeFilter={() => setisPageOpen("Homepage")} />
+        </ScrollView>
+      )}
+      {isPageOpen === "Login" && (
+        <ScrollView contentContainerStyle={styles.scollContent}>
+          <Login closeLogin={() => [setisPageOpen('Homepage'), setisLogin(true)]} 
+                  gotoSignup={() => setisPageOpen('Signup')
+          } />
+        </ScrollView>
+      )}
+      {isPageOpen === "Signup" && (
+        <ScrollView contentContainerStyle={styles.scollContent}>
+          <Signup closeSignup={() => [setisPageOpen('Homepage'), setisLogin(true)]}
+                  gotoLogin={() => setisPageOpen('Login')} />
+        </ScrollView>
+      )}
+      {isPageOpen === "Setting" && (
+        <ScrollView contentContainerStyle={styles.scollContent}>
+          <Setting closeSetting={() => setisPageOpen('Homepage')}
+                    logout={() => [setisPageOpen('Homepage'), setisLogin(false)]}
+                    gotoEdit={() => setisPageOpen('EditProfile')}/>
+        </ScrollView>
+      )}
+      {isPageOpen === "Homepage" && (
+        <ScrollView contentContainerStyle={styles.scollContent}>
+          <Homepage />
+        </ScrollView>
+      )}
+      {isPageOpen === "EditProfile" && (
+        <ScrollView contentContainerStyle={styles.scollContent}>
+          <EditProfile closeEditProfile={() => setisPageOpen('Setting')}/>
+        </ScrollView> 
+      )}
 
 
     </View>
