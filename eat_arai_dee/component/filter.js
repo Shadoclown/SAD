@@ -128,7 +128,7 @@ function Filter( {closeFilter} ) {
             </View>
             <View style={styles.horizontal_line} />
             <View style={[styles.food_preference, { gap: 25 }]}>
-                <Text>Dietary Restrictions</Text>
+                <Text>Distance</Text>
                 <View style={styles.dietary_restrictions}>
                     <View style={styles.circle} />
                     <View style={styles.line} />
