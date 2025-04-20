@@ -32,7 +32,7 @@ function Homepage() {
             name: 'Burger Joint',
             distance: '3.0 km',
             rating: 4.2,
-            price: '$$',
+            price: '$',
             spiceLevel: 2,
             category: ['Burgers', 'Fast Food'],
             image: require('../image/burger_restuarant.jpg'),
