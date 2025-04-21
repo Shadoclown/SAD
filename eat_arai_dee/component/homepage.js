@@ -5,6 +5,7 @@ import Card from './card';
 function Homepage() {
     const [selectedFilter, setSelectedFilter] = useState('Individual');
     const [random, setRandmon] = useState(false);
+    const [israndom, setIsRandom] = useState();
 
     const restaurants = [
         {
@@ -38,6 +39,13 @@ function Homepage() {
             image: require('../image/burger_restuarant.jpg'),
         },
     ];
+
+    function handleRandom() {
+        setRandmon(true);
+        const randomIndex = Math.floor(Math.random() * 3);
+        setIsRandom(randomIndex);
+        console.log(randomIndex);
+    }
 
     return (
         <View style={styles.homepage}>
@@ -80,21 +88,21 @@ function Homepage() {
             </View>
 
             <View style={styles.homepage_random}>
-                <TouchableOpacity onPress={() => setRandmon(true)}>
+                <TouchableOpacity onPress={() => handleRandom()}>
                     <Text style={styles.random_button}>Random Restaurant</Text>
                 </TouchableOpacity>
             </View>
 
-            {random ? (
+            {random && israndom !== undefined ? (
                 <Card
-                    key={restaurants[2].id}
-                    name={restaurants[2].name}
-                    distance={restaurants[2].distance}
-                    rating={restaurants[2].rating}
-                    price={restaurants[2].price}
-                    spiceLevel={restaurants[2].spiceLevel}
-                    category={restaurants[2].category}
-                    image={restaurants[2].image}
+                    key={restaurants[israndom].id}
+                    name={restaurants[israndom].name}
+                    distance={restaurants[israndom].distance}
+                    rating={restaurants[israndom].rating}
+                    price={restaurants[israndom].price}
+                    spiceLevel={restaurants[israndom].spiceLevel}
+                    category={restaurants[israndom].category}
+                    image={restaurants[israndom].image}
                 />
             ) : (
                 restaurants.map((restaurant) => (
