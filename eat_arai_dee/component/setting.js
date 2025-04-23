@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     info_button: {
         width: '80%',
         height: 50,
-        backgroundColor: 'blue',
+        backgroundColor: 'rgb(49, 159, 255)',
         borderRadius: 10,
         marginTop: 20,
         justifyContent: 'center',
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     },
     logout_button: {
         marginTop: 100,
-        backgroundColor: 'red',
+        backgroundColor: 'rgb(255, 40, 40)',
     },
     footer: {
         width: '50%',
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     close_button: {
         width: '80%',
         height: 50,
-        backgroundColor: 'red',
+        backgroundColor: 'rgb(255, 40, 40)',
         borderRadius: 10,
         justifyContent: 'center',
     },

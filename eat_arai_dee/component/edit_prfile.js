@@ -11,7 +11,7 @@ function EditProfile({ closeEditProfile }) {
                     style={styles.profile_image}
                 />
                 <TouchableOpacity style={styles.edit_image_button}>
-                    <Text style={styles.edit_image_text}>Chagne Profile</Text>
+                    <Text style={styles.edit_image_text}>Change Profile</Text>
                 </TouchableOpacity>     
             </View>
 
