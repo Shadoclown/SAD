@@ -333,12 +333,12 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     detail_button: {
-        backgroundColor: 'blue',
+        backgroundColor: "rgb(49, 159, 255)",
         padding: 10,
         borderRadius: 5,
     },
     menu_button: {
-        backgroundColor: 'blue',
+        backgroundColor: "rgb(49, 159, 255)",
         padding: 10,
         borderRadius: 5,
     },

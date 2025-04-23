@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   navbar_logo_text: {
+    fontSize: 18
   },
   navbar_icon: {
     flexDirection: 'row',
