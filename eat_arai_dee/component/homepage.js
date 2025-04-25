@@ -5,43 +5,63 @@ import supabase from "./connect";
 
 function Homepage() {
   const [selectedFilter, setSelectedFilter] = useState("Individual");
-  const [random, setRandmon] = useState(false);
+  const [random, setRandom] = useState(false);
   const [israndom, setIsRandom] = useState();
 
   const [restaurant, setRestaurant] = useState([]);
 
-  // const restaurants = [
-  //   {
-  //     id: 1,
-  //     name: "Pizza Restaurant",
-  //     distance: "2.5 km",
-  //     rating: 4.5,
-  //     price: "$$$",
-  //     spiceLevel: 3,
-  //     category: ["Pizza", "Italian", "Fast Food"],
-  //     image: require("../image/pizza_restuarant.jpg"),
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Sushi Place",
-  //     distance: "1.2 km",
-  //     rating: 4.8,
-  //     price: "$$$$",
-  //     spiceLevel: 1,
-  //     category: ["Sushi", "Japanese"],
-  //     image: require("../image/sushi_restuarant.jpg"),
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "Burger Joint",
-  //     distance: "3.0 km",
-  //     rating: 4.2,
-  //     price: "$",
-  //     spiceLevel: 2,
-  //     category: ["Burgers", "Fast Food"],
-  //     image: require("../image/burger_restuarant.jpg"),
-  //   },
-  // ];
+  const restaurants_more = [
+    {
+      id: 1,
+      category: ["Pizza", "Italian", "Fast Food"],
+      image: require("../image/pizza_restuarant.jpg"),
+    },
+    {
+      id: 2,
+      category: ["Sushi", "Japanese"],
+      image: require("../image/sushi_restuarant.jpg"),
+    },
+    {
+      id: 3,
+      category: ["Burgers", "Fast Food"],
+      image: require("../image/burger_restuarant.jpg"),
+    },
+    {
+      id: 4,
+      category: ["Burgers", "Fast Food"],
+      image: require("../image/burger_restuarant.jpg"),
+    },
+    {
+      id: 5,
+      category: ["Burgers", "Fast Food"],
+      image: require("../image/burger_restuarant.jpg"),
+    },
+    {
+      id: 6,
+      category: ["Burgers", "Fast Food"],
+      image: require("../image/burger_restuarant.jpg"),
+    },
+    {
+      id: 7,
+      category: ["Burgers", "Fast Food"],
+      image: require("../image/burger_restuarant.jpg"),
+    },
+    {
+      id: 8,
+      category: ["Burgers", "Fast Food"],
+      image: require("../image/burger_restuarant.jpg"),
+    },
+    {
+      id: 9,
+      category: ["Burgers", "Fast Food"],
+      image: require("../image/burger_restuarant.jpg"),
+    },
+    {
+      id: 10,
+      category: ["Burgers", "Fast Food"],
+      image: require("../image/burger_restuarant.jpg"),
+    }
+  ];
 
   useEffect(() => {
     async function fetchRestaurants() {
@@ -53,18 +73,17 @@ function Homepage() {
 
   // Handle random restaurant selection
   function handleRandom() {
-    if (restaurant.length === 0) return;
-
-    let randomIndex;
-    do {
-      randomIndex = Math.floor(Math.random() * restaurant.length);
-    } while (randomIndex === isRandom);
-
+    if (restaurant.length === 0) return; // Ensure there are restaurants to choose from
+   const randomIndex = Math.floor(Math.random() * restaurant.length);
     setRandom(true);
     setIsRandom(randomIndex);
-    console.log("Random Index:", randomIndex);
   }
-  
+
+  function formatTime(timeString) {
+    const [hours, minutes, seconds] = timeString.split(":");
+    const final_time = [hours, minutes].join(":")
+    return final_time
+  }
 
   return (
     <View style={styles.homepage}>
@@ -129,6 +148,21 @@ function Homepage() {
           rating={restaurant[israndom].rating}
           price={restaurant[israndom].price}
           spiceLevel={restaurant[israndom].spice_level}
+          restaurantId={restaurant[israndom].restaurant_id}
+          image={
+            restaurants_more.find(
+              (item) => item.id === restaurant[israndom].restaurant_id
+            )?.image || null
+          }
+          category={
+            restaurants_more.find(
+              (item) => item.id === restaurant.restaurant_id
+            )?.category || null
+          }
+          openDay={restaurant.open_day}
+          openTime={formatTime(restaurant.open_time)}
+          closeTime={formatTime(restaurant.close_time)}
+          locationLink={restaurant.location_link}
         />
       ) : (
         restaurant.map((restaurant) => (
@@ -139,6 +173,21 @@ function Homepage() {
             rating={restaurant.rating}
             price={restaurant.price}
             spiceLevel={restaurant.spice_level}
+            restaurantId={restaurant.restaurant_id}
+            image={
+              restaurants_more.find(
+                (item) => item.id === restaurant.restaurant_id
+              )?.image || null
+            }
+            category={
+              restaurants_more.find(
+                (item) => item.id === restaurant.restaurant_id
+              )?.category || null
+            }
+            openDay={restaurant.open_day}
+            openTime={formatTime(restaurant.open_time)}
+            closeTime={formatTime(restaurant.close_time)}
+            locationLink={restaurant.location_link}
           />
         ))
       )}
