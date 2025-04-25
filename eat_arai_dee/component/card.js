@@ -73,7 +73,7 @@ const restaurantMenus = {
     ],
 };
 
-function Card({ name, distance, rating, price, spiceLevel, category, image }) {
+function Card({ name, location, rating, price, spiceLevel}) {
     const [ViewMore, setViewMore] = useState(false);
     const [ViewDetail, setViewDetail] = useState("detail");
 
@@ -81,7 +81,7 @@ function Card({ name, distance, rating, price, spiceLevel, category, image }) {
         <View style={styles.card_container}>
             <View style={[styles.card_content, ViewMore && styles.card_content_expanded]}>
                 <View style={styles.card_image}>
-                    <Image source={image} style={styles.card_resturant_image} />
+                    <Image source={require('../image/burger_restuarant.jpg')} style={styles.card_resturant_image} />
                 </View>
 
                 <View style={styles.card_name_rating}>
@@ -98,32 +98,20 @@ function Card({ name, distance, rating, price, spiceLevel, category, image }) {
                 <View style={styles.horizontal_line} />
 
                 <View style={styles.distance_price}>
-                    <Text>Distance: {distance}</Text>
+                    {/* <Text>Distance: {distance}</Text> */}
                     <View style={styles.price_range}>
-                        {Array.from({ length: price.length }, (_, index) => (
-                            <Image
-                                key={index}
-                                source={require('../image/price_range_icon.png')}
-                                style={styles.price_range_icon}
-                            />
-                        ))}
+                        <Text>{location}</Text>
                     </View>
                 </View>
 
                 <View style={styles.card_spice_level}>
                     <Text style={styles.spice_text}>Spice Level</Text>
                     <View style={styles.level}>
-                        {Array.from({ length: spiceLevel }, (_, index) => (
-                            <Image
-                                key={index}
-                                source={require('../image/spice_level_icon.png')}
-                                style={styles.spice_level_icon}
-                            />
-                        ))}
+                        <Text>{spiceLevel}</Text>
                     </View>
                 </View>
 
-                <View style={styles.card_category}>
+                {/* <View style={styles.card_category}>
                     <View style={styles.category}>
                         {category.map((item, index) => (
                             <Text key={index} style={styles.category_item}>
@@ -131,7 +119,7 @@ function Card({ name, distance, rating, price, spiceLevel, category, image }) {
                             </Text>
                         ))}
                     </View>
-                </View>
+                </View> */}
 
                 {ViewMore && (
                     <View style={styles.view_more_detail}>
@@ -146,17 +134,16 @@ function Card({ name, distance, rating, price, spiceLevel, category, image }) {
                             </>
                         ) : (
                             <>
-                                <Text style={styles.menu_text}>Menu</Text>
+                                {/* <Text style={styles.menu_text}>Menu</Text>
                                 {(restaurantMenus[name] || []).map((item) => (
                                     <View key={item.id} style={styles.menu_item}>
                                         <Image source={item.image} style={styles.menu_item_image} />
                                         <View style={styles.menu_item_details}>
                                             <Text style={styles.menu_item_name}>{item.name}</Text>
-                                            {/* <Text style={styles.menu_item_description}>{item.description}</Text> */}
                                             <Text style={styles.menu_item_price}>{item.price}</Text>
                                         </View>
                                     </View>
-                                ))}
+                                ))} */}
                             </>
                         )}
                         <View style={[styles.horizontal_line]} />

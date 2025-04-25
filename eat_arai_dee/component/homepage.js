@@ -1,63 +1,70 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Card from "./card";
+import supabase from "./connect";
 
 function Homepage() {
   const [selectedFilter, setSelectedFilter] = useState("Individual");
   const [random, setRandmon] = useState(false);
   const [israndom, setIsRandom] = useState();
 
-  const restaurants = [
-    {
-      id: 1,
-      name: "Pizza Restaurant",
-      distance: "2.5 km",
-      rating: 4.5,
-      price: "$$$",
-      spiceLevel: 3,
-      category: ["Pizza", "Italian", "Fast Food"],
-      image: require("../image/pizza_restuarant.jpg"),
-    },
-    {
-      id: 2,
-      name: "Sushi Place",
-      distance: "1.2 km",
-      rating: 4.8,
-      price: "$$$$",
-      spiceLevel: 1,
-      category: ["Sushi", "Japanese"],
-      image: require("../image/sushi_restuarant.jpg"),
-    },
-    {
-      id: 3,
-      name: "Burger Joint",
-      distance: "3.0 km",
-      rating: 4.2,
-      price: "$",
-      spiceLevel: 2,
-      category: ["Burgers", "Fast Food"],
-      image: require("../image/burger_restuarant.jpg"),
-    },
-  ];
+  const [restaurant, setRestaurant] = useState([]);
 
-  // function handleRandom() {
-  //     setRandmon(true);
-  //     const randomIndex = Math.floor(Math.random() * 3);
-  //     setIsRandom(randomIndex);
-  //     console.log(randomIndex);
-  // }
+  // const restaurants = [
+  //   {
+  //     id: 1,
+  //     name: "Pizza Restaurant",
+  //     distance: "2.5 km",
+  //     rating: 4.5,
+  //     price: "$$$",
+  //     spiceLevel: 3,
+  //     category: ["Pizza", "Italian", "Fast Food"],
+  //     image: require("../image/pizza_restuarant.jpg"),
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Sushi Place",
+  //     distance: "1.2 km",
+  //     rating: 4.8,
+  //     price: "$$$$",
+  //     spiceLevel: 1,
+  //     category: ["Sushi", "Japanese"],
+  //     image: require("../image/sushi_restuarant.jpg"),
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Burger Joint",
+  //     distance: "3.0 km",
+  //     rating: 4.2,
+  //     price: "$",
+  //     spiceLevel: 2,
+  //     category: ["Burgers", "Fast Food"],
+  //     image: require("../image/burger_restuarant.jpg"),
+  //   },
+  // ];
 
+  useEffect(() => {
+    async function fetchRestaurants() {
+      const {data} = await supabase.from("restaurant").select("*");
+      setRestaurant(data);
+    }
+    fetchRestaurants();
+  },[])
+
+  // Handle random restaurant selection
   function handleRandom() {
-    //non repeating random number
+    if (restaurant.length === 0) return;
+
     let randomIndex;
     do {
-      randomIndex = Math.floor(Math.random() * 3);
-    } while (randomIndex === israndom);
+      randomIndex = Math.floor(Math.random() * restaurant.length);
+    } while (randomIndex === isRandom);
 
-    setRandmon(true);
+    setRandom(true);
     setIsRandom(randomIndex);
-    console.log(randomIndex);
+    console.log("Random Index:", randomIndex);
   }
+  
 
   return (
     <View style={styles.homepage}>
@@ -116,26 +123,22 @@ function Homepage() {
 
       {random && israndom !== undefined ? (
         <Card
-          key={restaurants[israndom].id}
-          name={restaurants[israndom].name}
-          distance={restaurants[israndom].distance}
-          rating={restaurants[israndom].rating}
-          price={restaurants[israndom].price}
-          spiceLevel={restaurants[israndom].spiceLevel}
-          category={restaurants[israndom].category}
-          image={restaurants[israndom].image}
+          key={restaurant[israndom].restaurant_id}
+          name={restaurant[israndom].restaurant_name}
+          location={restaurant[israndom].location}
+          rating={restaurant[israndom].rating}
+          price={restaurant[israndom].price}
+          spiceLevel={restaurant[israndom].spice_level}
         />
       ) : (
-        restaurants.map((restaurant) => (
+        restaurant.map((restaurant) => (
           <Card
-            key={restaurant.id}
-            name={restaurant.name}
-            distance={restaurant.distance}
+            key={restaurant.restaurant_id}
+            name={restaurant.restaurant_name}
+            location={restaurant.location}
             rating={restaurant.rating}
             price={restaurant.price}
-            spiceLevel={restaurant.spiceLevel}
-            category={restaurant.category}
-            image={restaurant.image}
+            spiceLevel={restaurant.spice_level}
           />
         ))
       )}
