@@ -73,7 +73,7 @@ function Homepage() {
 
   // Handle random restaurant selection
   function handleRandom() {
-    if (restaurant.length === 0) return; // Ensure there are restaurants to choose from
+    if (restaurant.length === 0) return;
    const randomIndex = Math.floor(Math.random() * restaurant.length);
     setRandom(true);
     setIsRandom(randomIndex);
@@ -83,6 +83,20 @@ function Homepage() {
     const [hours, minutes, seconds] = timeString.split(":");
     const final_time = [hours, minutes].join(":")
     return final_time
+  }
+
+  function shuffleRecommend() {
+    const final_shuffle = [];
+    const usedIndices = new Set();
+
+    while (final_shuffle.length < 5 && final_shuffle.length < restaurant.length) {
+      const randomIndex = Math.floor(Math.random() * restaurant.length);
+      if (!usedIndices.has(randomIndex)) {
+        final_shuffle.push(restaurant[randomIndex]);
+        usedIndices.add(randomIndex);
+      }
+    }
+    return final_shuffle;
   }
 
   return (
@@ -140,6 +154,16 @@ function Homepage() {
         </TouchableOpacity>
       </View>
 
+      {random == true ? (
+        <View style={styles.above_text}>
+          <Text style={styles.text_text}>Random Restaurant</Text>
+        </View>
+      ) : (
+        <View style={styles.above_text}>
+          <Text style={styles.text_text}>Recommended</Text>
+        </View>
+      )}
+
       {random && israndom !== undefined ? (
         <Card
           key={restaurant[israndom].restaurant_id}
@@ -152,20 +176,20 @@ function Homepage() {
           image={
             restaurants_more.find(
               (item) => item.id === restaurant[israndom].restaurant_id
-            )?.image || null
+            )?.image || require("../image/burger_restuarant.jpg")
           }
           category={
             restaurants_more.find(
-              (item) => item.id === restaurant.restaurant_id
-            )?.category || null
+              (item) => item.id === restaurant[israndom].restaurant_id
+            )?.category || ['none']
           }
           openDay={restaurant.open_day}
-          openTime={formatTime(restaurant.open_time)}
-          closeTime={formatTime(restaurant.close_time)}
-          locationLink={restaurant.location_link}
+          openTime={formatTime(restaurant[israndom].open_time)}
+          closeTime={formatTime(restaurant[israndom].close_time)}
+          locationLink={restaurant[israndom].location_link}
         />
       ) : (
-        restaurant.map((restaurant) => (
+        shuffleRecommend().map((restaurant) => (
           <Card
             key={restaurant.restaurant_id}
             name={restaurant.restaurant_name}
@@ -177,12 +201,12 @@ function Homepage() {
             image={
               restaurants_more.find(
                 (item) => item.id === restaurant.restaurant_id
-              )?.image || null
+              )?.image || require("../image/burger_restuarant.jpg")
             }
             category={
               restaurants_more.find(
                 (item) => item.id === restaurant.restaurant_id
-              )?.category || null
+              )?.category || ['none']
             }
             openDay={restaurant.open_day}
             openTime={formatTime(restaurant.open_time)}
@@ -296,6 +320,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
   },
+  above_text: {
+    marginTop: 30,
+    marginBottom: -8,
+  },
+  text_text: {
+    fontSize: 25,
+    fontWeight: 'bold',
+  }
 });
 
 export default Homepage;
