@@ -79,7 +79,7 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, image, 
                                 <Text style={styles.menu_text}>Recommended Menu</Text>
                                 {Menu.filter(item => item.restaurant_id === restaurantId).map((item) => (
                                     <View key={item.menu_id} style={styles.menu_item}>
-                                        <View> <Image source={require("../image/california_roll.jpg")} style={styles.menu_item_image} /></View>
+                                        <View> <Image source={{uri: 'https://drive.google.com/uc?id=14GYxErzkKUN44Z_47lvgqb2W5jAshc7h'}} style={styles.menu_item_image} /></View>
                                         <View style={styles.menu_item_details}>
                                             <Text style={styles.menu_item_name}>{item.menu_name}</Text>
                                             <Text style={styles.menu_item_price}>{item.price}</Text>
