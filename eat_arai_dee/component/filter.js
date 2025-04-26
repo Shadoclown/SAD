@@ -7,6 +7,11 @@ function Filter( {closeFilter} ) {
     const [selectedCostRange, setSelectedCostRange] = useState(null);
     const [selectedSpice, setSelectedSpice] = useState(null); 
 
+    const [Preferences, setPreferences] = useSate([]);
+    const [Restriction, setRestriction] = useSate([]);
+    const [Cost, setCost] = useSate([]);
+    const [Spice, setSpice] = useSate([]);
+
     const foodPreferences = [
         { id: 1, name: 'Vegetarian' },
         { id: 2, name: 'Vegan' },
@@ -70,7 +75,7 @@ function Filter( {closeFilter} ) {
                             styles.food_preference_item,
                             selectedPreferences.includes(item.id) && styles.colorfoodPreference,
                             ]}
-                            onPress={() => togglePreference(item.id)}
+                            onPress={() => [togglePreference(item.id), setPreferences.append(item.name)]}
                         >
                             <Text style={styles.food_preference_text}>{item.name}</Text>
                         </TouchableOpacity>
