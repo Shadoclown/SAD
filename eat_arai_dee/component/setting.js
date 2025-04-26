@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 
-function Setting( {closeSetting, logout, gotoEdit} ) {
+function Setting( {closeSetting, logout, gotoEdit, gotoHistory} ) {
     return (
         <View style={styles.container}>
             <View style={styles.user_profile}>
@@ -13,7 +13,7 @@ function Setting( {closeSetting, logout, gotoEdit} ) {
             <TouchableOpacity style={styles.info_button} onPress={gotoEdit}>
                 <Text style={styles.info_button_text}>Personal Information Setting</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.info_button}>
+            <TouchableOpacity style={styles.info_button} onPress={gotoHistory}>
                 <Text style={styles.info_button_text}>History</Text>
             </TouchableOpacity>
 
@@ -42,7 +42,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-around',
         width: '65%',
-        // backgroundColor: 'white',
     },
     profile_image: {
         width: 100,

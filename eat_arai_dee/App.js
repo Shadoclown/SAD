@@ -6,6 +6,7 @@ import Login from './component/login';
 import Signup from './component/signup';
 import Setting from './component/setting';
 import EditProfile from './component/edit_prfile';
+import Histroy from './component/history';
 
 export default function App() {
   const [isPageOpen, setisPageOpen] = useState("Homepage");
@@ -55,7 +56,8 @@ export default function App() {
         <ScrollView contentContainerStyle={styles.scollContent}>
           <Setting closeSetting={() => setisPageOpen('Homepage')}
                     logout={() => [setisPageOpen('Homepage'), setisLogin(false)]}
-                    gotoEdit={() => setisPageOpen('EditProfile')}/>
+                    gotoEdit={() => setisPageOpen('EditProfile')}
+                    gotoHistory={() => setisPageOpen('History')}/>
         </ScrollView>
       )}
       {isPageOpen === "Homepage" && (
@@ -67,6 +69,11 @@ export default function App() {
         <ScrollView contentContainerStyle={styles.scollContent}>
           <EditProfile closeEditProfile={() => setisPageOpen('Setting')}/>
         </ScrollView> 
+      )}
+      {isPageOpen === "History" && (
+        <ScrollView contentContainerStyle={styles.scollContent}>
+          <Histroy  closeHistory={() => setisPageOpen('Setting')}/>
+        </ScrollView>
       )}
 
 
