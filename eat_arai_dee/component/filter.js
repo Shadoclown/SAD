@@ -29,6 +29,13 @@ function Filter( {closeFilter} ) {
         { id: 3, name: 'Expensive' },
         { id: 4, name: 'Luxury' },
     ];
+    const SpiceLevel = [
+        { id: 1, name: 1 },
+        { id: 2, name: 2 },
+        { id: 3, name: 3 },
+        { id: 4, name: 4 },
+        { id: 5, name: 5 },
+    ];
 
     const togglePreference = (id) => {
         setSelectedPreferences((prev) =>
@@ -111,16 +118,16 @@ function Filter( {closeFilter} ) {
                 <Text>Spice Level</Text>
                 <View style={[styles.preference_checkbox, {justifyContent: 'center', gap: 20}]}>
                     <Text style={{fontSize: 12, marginTop: 10}}>lowest</Text>
-                    {[1, 2, 3, 4, 5].map((level) => (
+                    {SpiceLevel.map((level) => (
                         <TouchableOpacity
-                            key={level}
+                            key={level.id}
                             style={[
                                 styles.food_preference_item,
-                                selectedSpice === level && styles.colorfoodPreference,
+                                selectedSpice === level.id && styles.colorfoodPreference,
                             ]}
-                            onPress={() => toggleSpice(level)}
+                            onPress={() => toggleSpice(level.id)}
                         >
-                            <Text style={styles.food_preference_text}>{level}</Text>
+                            <Text style={styles.food_preference_text}>{level.name}</Text>
                         </TouchableOpacity>
                     ))}
                     <Text style={{fontSize: 12, marginTop: 10}}>highest</Text>
