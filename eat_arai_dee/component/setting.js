@@ -1,6 +1,11 @@
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Setting( {closeSetting, logout, gotoEdit, gotoHistory} ) {
+    function haddleLogout() {
+        AsyncStorage.removeItem('userId')
+        logout();
+    }
     return (
         <View style={styles.container}>
             <View style={styles.user_profile}>
@@ -17,7 +22,7 @@ function Setting( {closeSetting, logout, gotoEdit, gotoHistory} ) {
                 <Text style={styles.info_button_text}>History</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.info_button, styles.logout_button]} onPress={logout}>
+            <TouchableOpacity style={[styles.info_button, styles.logout_button]} onPress={haddleLogout}>
                 <Text style={styles.info_button_text}>Logout</Text>
             </TouchableOpacity>
 

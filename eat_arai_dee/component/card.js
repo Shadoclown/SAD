@@ -1,23 +1,54 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, Linking } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Linking, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import {supabase} from './connect'
+import { supabase } from './connect'; // Ensure Supabase is properly imported
+import { userId } from './login'; // Ensure userId is properly imported or passed as a prop
 
-function Card({ name, location, rating, price, spiceLevel, restaurantId, image, openDay, openTime, closeTime, locationLink, category}) {
+function Card({ name, location, rating, price, spiceLevel, restaurantId, image, openDay, openTime, closeTime, locationLink, category, userId }) {
     const [ViewMore, setViewMore] = useState(false);
     const [ViewDetail, setViewDetail] = useState("detail");
-
+    const [isLogin, setisLogin]  = useState(false);
     const [Menu, setMenu] = useState([]);
 
     useEffect(() => {
         async function fetchMenu() {
-            const {data} = await supabase.from("menu").select("*");
-            setMenu(data);
+            const { data, error } = await supabase.from("menu").select("*");
+            if (error) {
+                console.error("Error fetching menu:", error.message);
+            } else {
+                setMenu(data);
+            }
         }
-        fetchMenu();
-    },[])
 
-    const handleLink = async () => {
-        await Linking.openURL(locationLink);
+        fetchMenu();
+    }, []);
+
+    useEffect(() => {
+        if (userId != null) {
+            setisLogin(true);
+        } else {
+            setisLogin(false);
+        }
+    }, [userId]);
+
+    const handleLink = (link) => {
+        Linking.openURL(locationLink);
+    };
+
+    async function AddHistry() {
+        const now = new Date();
+        const currentTimeData = now.toISOString();
+        if (!userId) {
+            Alert.alert('Error', 'Please Login.');
+            return;
+        } else {
+            const { data, error } = await supabase.from("history").insert([
+                {
+                    time: currentTimeData,
+                    user_id: parseInt(userId),
+                    restaurant_id: restaurantId,
+                },
+            ]);
+        }
     }
 
     return (
@@ -47,7 +78,6 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, image, 
                 <View style={styles.horizontal_line} />
 
                 <View style={styles.distance_price}>
-                    {/* <Text>Distance: {distance}</Text> */}
                     <View style={styles.price_range}>
                         <Text>{location}</Text>
                     </View>
@@ -80,7 +110,7 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, image, 
                                     .map((item) => (
                                         <View key={item.menu_id} style={styles.menu_item}>
                                             <Image
-                                                source={{ uri:'https://via.placeholder.com/50' }}
+                                                source={{ uri: 'https://via.placeholder.com/50' }}
                                                 style={styles.menu_item_image}
                                             />
                                             <View style={styles.menu_item_details}>
@@ -102,12 +132,11 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, image, 
                                 </View>
                                 <View>
                                     <Text style={styles.location_text}>Google Map</Text>
-                                    <TouchableOpacity onPress={handleLink}>
-                                        <Text style={styles.linkText}>{locationLink}</Text>
+                                    <TouchableOpacity onPress={() => handleLink(locationLink)}>
+                                        <Text style={styles.linkText}>View More</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
-                            
                         )}
                         <View style={[styles.horizontal_line]} />
                         <View style={styles.detail_menu_button}>
@@ -115,7 +144,7 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, image, 
                                 style={styles.detail_button}
                                 onPress={() => setViewDetail("detail")}
                             >
-                                <Text style={styles.detail_button_text}>Detail</Text> 
+                                <Text style={styles.detail_button_text}>Detail</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={styles.menu_button}
@@ -130,7 +159,15 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, image, 
                 <View style={styles.view_detail}>
                     <TouchableOpacity
                         style={styles.view_detail_button}
-                        onPress={() => [setViewMore(!ViewMore), setViewDetail("detail")]}
+                        onPress={() => {
+                            if (isLogin) {
+                                AddHistry();
+                                setViewMore(!ViewMore);
+                                setViewDetail("detail");
+                            } else {
+                                Alert.alert('Error', 'You must be logged in to view more details.');
+                            }
+                        }}
                     >
                         <Text style={styles.view_detail_text}>
                             {ViewMore ? 'Hide Details' : 'View Details'}

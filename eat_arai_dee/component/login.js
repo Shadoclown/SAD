@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from './connect';
 
 function Login({ closeLogin, gotoSignup }) {
     const [Username, setUsername] = useState('');
     const [Password, setPassword] = useState('');
 
-    // Function to check login credentials
     async function checkLogin() {
         if (!Username || !Password) {
             Alert.alert("Error", "Please enter username and password.");
@@ -14,7 +14,7 @@ function Login({ closeLogin, gotoSignup }) {
         } else {
             const { data, error } = await supabase
                 .from("user")
-                .select("username, password")
+                .select("user_id,username, password")
                 .eq('username', Username)
                 .single();
     
@@ -22,6 +22,8 @@ function Login({ closeLogin, gotoSignup }) {
                 Alert.alert("Error", "Error fetching data from Supabase: " + error.message);
             } else {
                 if (data && data.password === Password) {
+                    await AsyncStorage.setItem('userId', data.user_id.toString());
+                    Alert.alert("Success", "Login successful!");
                     closeLogin();
                 } else {
                     Alert.alert("Error", "Invalid username or password.");

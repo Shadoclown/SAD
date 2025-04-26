@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Card from "./card";
 import {supabase} from "./connect";
 
-function Homepage() {
+function Homepage( {userId}) {
   const [selectedFilter, setSelectedFilter] = useState("Individual");
   const [random, setRandom] = useState(false);
   const [israndom, setIsRandom] = useState();
@@ -80,10 +80,10 @@ function Homepage() {
   }
 
   function formatTime(timeString) {
-    const [hours, minutes, seconds] = timeString.split(":");
-    const final_time = [hours, minutes].join(":")
-    return final_time
-  }
+    if (!timeString) return "N/A";
+    const [hours, minutes] = timeString.split(":");
+    return `${hours}:${minutes}`;
+  }  
 
   function shuffleRecommend() {
     const final_shuffle = [];
@@ -183,10 +183,11 @@ function Homepage() {
               (item) => item.id === restaurant[israndom].restaurant_id
             )?.category || ['none']
           }
-          openDay={restaurant.open_day}
+          openDay={restaurant[israndom].open_day}
           openTime={formatTime(restaurant[israndom].open_time)}
           closeTime={formatTime(restaurant[israndom].close_time)}
           locationLink={restaurant[israndom].location_link}
+          userId={userId}
         />
       ) : (
         shuffleRecommend().map((restaurant) => (
@@ -212,6 +213,7 @@ function Homepage() {
             openTime={formatTime(restaurant.open_time)}
             closeTime={formatTime(restaurant.close_time)}
             locationLink={restaurant.location_link}
+            userId={userId}
           />
         ))
       )}

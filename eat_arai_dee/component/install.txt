@@ -1,2 +1,5 @@
 -- suparabse --
 npm install @supabase/supabase-js
+
+-- asyncStorage --
+npm install @react-native-async-storage/async-storage

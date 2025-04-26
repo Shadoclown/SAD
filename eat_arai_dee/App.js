@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Homepage from './component/homepage';
 import Filter from './component/filter';
 import Login from './component/login';
@@ -11,6 +12,19 @@ import Histroy from './component/history';
 export default function App() {
   const [isPageOpen, setisPageOpen] = useState("Homepage");
   const [isLogin, setisLogin] = useState(false);
+  const [UserId, setUserId ] = useState(null);
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const userId = await AsyncStorage.getItem('userId');
+      if (userId) {
+        setUserId(userId);
+      } else {
+        setUserId(null);
+      }
+    };
+    checkLoginStatus();
+  })
 
   return (
     <View style={styles.container}>
@@ -62,7 +76,7 @@ export default function App() {
       )}
       {isPageOpen === "Homepage" && (
         <ScrollView contentContainerStyle={styles.scollContent}>
-          <Homepage />
+          <Homepage userId={UserId} />
         </ScrollView>
       )}
       {isPageOpen === "EditProfile" && (
