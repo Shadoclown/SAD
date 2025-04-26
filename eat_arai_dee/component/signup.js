@@ -1,6 +1,43 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Footer } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { supabase } from './connect';
 
 function Signup( {closeSignup, gotoLogin} ) {
+    const [newUser, setnewUser] = useState('');
+    const [newEmail, setnewEmail] = useState('');
+    const [newPassword, setnewPassword] = useState('');
+    const [newConfirmPassword, setnewConfirmPassword] = useState('');
+
+    async function fetchsignup() {
+        const { data } = await supabase.from('user').select('email');
+
+        if (!newUser || !newEmail || !newPassword || !newConfirmPassword) {
+            Alert.alert("Error", "Please fill in all fields.");
+        } else if (newPassword !== newConfirmPassword) {
+            Alert.alert("Error", "Passwords do not match.");
+        } else if (data.email == newEmail) {
+            Alert.alert("Error", "Email already exists.");
+        }else {
+            const { data, error } = await supabase
+                .from('user')
+                .insert([
+                    {
+                        username: newUser,
+                        email: newEmail,
+                        password: newPassword,
+                    }
+                ]);
+
+            if (error) {
+                console.log("Signup error:", error);
+                Alert.alert("Error", "Signup failed: " + error.message);
+            } else {
+                Alert.alert("Success", "Account created successfully!");
+                closeSignup();
+            }
+        }
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.tri_icon}>
@@ -22,30 +59,34 @@ function Signup( {closeSignup, gotoLogin} ) {
             <TextInput
                 style={styles.input}
                 placeholder="Username"
-                value= 'username'
+                value= {newUser}
+                onChangeText={setnewUser}
             />
             <Text style={{width:'100%', marginBottom: 5}}>Email</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Email"
-                value= 'username@example.com'
+                value= {newEmail}
+                onChangeText={setnewEmail}
             />
             <Text style={{width:'100%', marginBottom: 5}}>Password</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Password"
-                value='password'
+                value= {newPassword}
+                onChangeText={setnewPassword}
                 secureTextEntry
             />
             <Text style={{width:'100%', marginBottom: 5}}>Confirm Password</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Confirm Password"
-                value='password'
+                value= {newConfirmPassword}
+                onChangeText={setnewConfirmPassword}
                 secureTextEntry
             />
 
-            <TouchableOpacity style={styles.button} onPress={closeSignup}>
+            <TouchableOpacity style={styles.button} onPress={fetchsignup}>
                 <Text style={styles.buttonText}>Register</Text>
             </TouchableOpacity>
 

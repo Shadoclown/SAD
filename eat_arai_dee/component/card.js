@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity, Linking } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import supabase from './connect'
+import {supabase} from './connect'
 
 function Card({ name, location, rating, price, spiceLevel, restaurantId, image, openDay, openTime, closeTime, locationLink, category}) {
     const [ViewMore, setViewMore] = useState(false);
@@ -19,7 +19,6 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, image, 
     const handleLink = async () => {
         await Linking.openURL(locationLink);
     }
-
 
     return (
         <View style={styles.card_container}>

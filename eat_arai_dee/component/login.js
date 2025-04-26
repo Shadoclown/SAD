@@ -15,14 +15,14 @@ function Login({ closeLogin, gotoSignup }) {
             const { data, error } = await supabase
                 .from("user")
                 .select("username, password")
-                .eq('username', Username) // Ensure you are filtering by the username
-                .single(); // This ensures only one row is returned (if exists)
+                .eq('username', Username)
+                .single();
     
             if (error) {
                 Alert.alert("Error", "Error fetching data from Supabase: " + error.message);
             } else {
                 if (data && data.password === Password) {
-                    closeLogin(); // Successfully logged in, so call closeLogin
+                    closeLogin();
                 } else {
                     Alert.alert("Error", "Invalid username or password.");
                 }
