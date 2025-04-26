@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
 import Card from "./card";
-import supabase from "./connect";
+import {supabase} from "./connect";
 
 function Homepage() {
   const [selectedFilter, setSelectedFilter] = useState("Individual");

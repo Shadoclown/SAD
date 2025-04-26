@@ -1,6 +1,36 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
+import { supabase } from './connect';
 
-function Login( {closeLogin, gotoSignup} ) {
+function Login({ closeLogin, gotoSignup }) {
+    const [Username, setUsername] = useState('');
+    const [Password, setPassword] = useState('');
+
+    // Function to check login credentials
+    async function checkLogin() {
+        if (!Username || !Password) {
+            Alert.alert("Error", "Please enter username and password.");
+            return;
+        } else {
+            const { data, error } = await supabase
+                .from("user")
+                .select("username, password")
+                .eq('username', Username) // Ensure you are filtering by the username
+                .single(); // This ensures only one row is returned (if exists)
+    
+            if (error) {
+                Alert.alert("Error", "Error fetching data from Supabase: " + error.message);
+            } else {
+                if (data && data.password === Password) {
+                    closeLogin(); // Successfully logged in, so call closeLogin
+                } else {
+                    Alert.alert("Error", "Invalid username or password.");
+                }
+            }
+        }
+    }
+    
+
     return (
         <View style={styles.container}>
             <View style={styles.tri_icon}>
@@ -14,34 +44,42 @@ function Login( {closeLogin, gotoSignup} ) {
                     <Image source={require('../image/location_icon.png')} style={styles.location_icon_image} />
                 </View>
             </View>
+
             <View style={styles.name_slogan}>
                 <Text style={styles.homepage_name}>Eat Arai Dee</Text>
                 <Text style={styles.homepage_slogan}>Let us decide where to eat</Text>
             </View>
-            <Text style={{width:'100%', marginBottom: 5}}>Username or Email</Text>
+
+            <Text style={{ width: '100%', marginBottom: 5 }}>Username</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Username"
-                value= 'username'
+                value={Username}
+                onChangeText={setUsername}
             />
-            <Text style={{width:'100%', marginBottom: 5}}>Password</Text>
+
+            <Text style={{ width: '100%', marginBottom: 5 }}>Password</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Password"
-                value='password'
+                value={Password}
+                onChangeText={setPassword}
                 secureTextEntry
             />
+
             <TouchableOpacity style={styles.forgot_button} onPress={closeLogin}>
                 <Text style={styles.forgot}>Forgot Password</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button} onPress={closeLogin}>
+            <TouchableOpacity style={styles.button} onPress={checkLogin}>
                 <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
 
-            <View style={styles.footer}>  
+            <View style={styles.footer}>
                 <TouchableOpacity style={styles.signup_button} onPress={gotoSignup}>
-                    <Text style={styles.signup}>Don't have an account?  <Text style={{color: '#007BFF',}}>Sign-up</Text></Text>
+                    <Text style={styles.signup}>
+                        Don't have an account? <Text style={{ color: '#007BFF' }}>Sign-up</Text>
+                    </Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -103,11 +141,6 @@ const styles = StyleSheet.create({
     homepage_slogan: {
         fontSize: 15,
         color: 'gray',
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
     },
     input: {
         width: '100%',

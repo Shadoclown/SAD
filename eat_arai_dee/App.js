@@ -40,7 +40,7 @@ export default function App() {
       )}
       {isPageOpen === "Login" && (
         <ScrollView contentContainerStyle={styles.scollContent}>
-          <Login closeLogin={() => [setisPageOpen('Homepage'), setisLogin(true)]} 
+          <Login closeLogin={() => [setisPageOpen('Homepage'), setisLogin(true)]}
                   gotoSignup={() => setisPageOpen('Signup')
           } />
         </ScrollView>

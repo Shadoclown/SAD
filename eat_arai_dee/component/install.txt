@@ -1,3 +1,7 @@
-suparabse
+-- suparabse --
 npm install @supabase/supabase-js
 
+-- navigate --
+npm install @react-navigation/native
+npm install react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-reanimated react-native-vector-icons @react-native-masked-view/masked-view
+npm install @react-navigation/stack
