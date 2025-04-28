@@ -3,21 +3,34 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from './connect'; // Ensure Supabase is properly imported
 import { userId } from './login'; // Ensure userId is properly imported or passed as a prop
 
-function Card({ name, location, rating, price, spiceLevel, restaurantId, image, openDay, openTime, closeTime, locationLink, category, userId }) {
+function Card({ name, location, rating, price, spiceLevel, restaurantId, image, openDay, openTime, closeTime, locationLink, userId }) {
     const [ViewMore, setViewMore] = useState(false);
     const [ViewDetail, setViewDetail] = useState("detail");
     const [isLogin, setisLogin]  = useState(false);
     const [Menu, setMenu] = useState([]);
+    const [category, setCategory] = useState([]);
 
     useEffect(() => {
         async function fetchMenu() {
             const { data, error } = await supabase.from("menu").select("*");
+            const { data: cate, error: categoryError } = await supabase
+                .from("category")
+                .select("*")
+                .eq("restaurant_id", restaurantId);
+
             if (error) {
                 console.error("Error fetching menu:", error.message);
             } else {
                 setMenu(data);
             }
+
+            if (categoryError) {
+                console.error("Error fetching category:", categoryError.message);
+            } else {
+                setCategory(cate);
+            }
         }
+        console.log(category);
 
         fetchMenu();
     }, []);
@@ -43,7 +56,7 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, image, 
         } else {
             const { data, error } = await supabase.from("history").insert([
                 {
-                    time: currentTimeData,
+                    // time: currentTimeData,
                     user_id: parseInt(userId),
                     restaurant_id: restaurantId,
                 },
@@ -92,11 +105,25 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, image, 
 
                 <View style={styles.card_category}>
                     <View style={styles.category}>
-                        {category.map((item, index) => (
-                            <Text key={index} style={styles.category_item}>
-                                {item}
-                            </Text>
-                        ))}
+                        {category && category.length > 0 ? (
+                            category
+                                .filter((item) => item.restaurant_id === restaurantId) // Filter by restaurant ID
+                                .flatMap((item) => {
+                                    try {
+                                        return JSON.parse(item.food_preference); // Parse the food_preference JSON string
+                                    } catch (error) {
+                                        console.error("Invalid JSON in food_preference:", item.food_preference, error);
+                                        return []; // Return an empty array if parsing fails
+                                    }
+                                })
+                                .map((preference, index) => (
+                                    <Text key={`preference-${index}`} style={styles.category_item}>
+                                        {preference}
+                                    </Text>
+                                ))
+                        ) : (
+                            <Text style={styles.additional_text}>No categories available</Text>
+                        )}
                     </View>
                 </View>
 

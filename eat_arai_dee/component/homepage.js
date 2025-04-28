@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Card from "./card";
 import {supabase} from "./connect";
 
@@ -10,66 +11,60 @@ function Homepage( {userId}) {
 
   const [restaurant, setRestaurant] = useState([]);
 
+  const foodPreferences = [AsyncStorage.getItem('selectedPreferences'),];
+
   const restaurants_more = [
     {
       id: 1,
-      category: ["Pizza", "Italian", "Fast Food"],
       image: require("../image/pizza_restuarant.jpg"),
     },
     {
       id: 2,
-      category: ["Sushi", "Japanese"],
       image: require("../image/sushi_restuarant.jpg"),
     },
     {
       id: 3,
-      category: ["Burgers", "Fast Food"],
       image: require("../image/burger_restuarant.jpg"),
     },
     {
       id: 4,
-      category: ["Burgers", "Fast Food"],
       image: require("../image/burger_restuarant.jpg"),
     },
     {
       id: 5,
-      category: ["Burgers", "Fast Food"],
       image: require("../image/burger_restuarant.jpg"),
     },
     {
       id: 6,
-      category: ["Burgers", "Fast Food"],
       image: require("../image/burger_restuarant.jpg"),
     },
     {
       id: 7,
-      category: ["Burgers", "Fast Food"],
       image: require("../image/burger_restuarant.jpg"),
     },
     {
       id: 8,
-      category: ["Burgers", "Fast Food"],
       image: require("../image/burger_restuarant.jpg"),
     },
     {
       id: 9,
-      category: ["Burgers", "Fast Food"],
       image: require("../image/burger_restuarant.jpg"),
     },
     {
       id: 10,
-      category: ["Burgers", "Fast Food"],
       image: require("../image/burger_restuarant.jpg"),
     }
   ];
 
   useEffect(() => {
     async function fetchRestaurants() {
-      const {data} = await supabase.from("restaurant").select("*");
+      const { data } = await supabase.from("restaurant").select(`*`);
       setRestaurant(data);
     }
-    fetchRestaurants();
-  },[])
+  
+    fetchRestaurants(); // Fetch the data when the component mounts
+  }, []);
+  
 
   // Handle random restaurant selection
   function handleRandom() {
@@ -178,11 +173,7 @@ function Homepage( {userId}) {
               (item) => item.id === restaurant[israndom].restaurant_id
             )?.image || require("../image/burger_restuarant.jpg")
           }
-          category={
-            restaurants_more.find(
-              (item) => item.id === restaurant[israndom].restaurant_id
-            )?.category || ['none']
-          }
+          // category={restaurant[israndom].category}
           openDay={restaurant[israndom].open_day}
           openTime={formatTime(restaurant[israndom].open_time)}
           closeTime={formatTime(restaurant[israndom].close_time)}
@@ -204,11 +195,7 @@ function Homepage( {userId}) {
                 (item) => item.id === restaurant.restaurant_id
               )?.image || require("../image/burger_restuarant.jpg")
             }
-            category={
-              restaurants_more.find(
-                (item) => item.id === restaurant.restaurant_id
-              )?.category || ['none']
-            }
+            // category={restaurant.category.food_preference}
             openDay={restaurant.open_day}
             openTime={formatTime(restaurant.open_time)}
             closeTime={formatTime(restaurant.close_time)}

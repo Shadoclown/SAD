@@ -1,39 +1,40 @@
-import { StyleSheet,View,Text,TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabase } from './connect';
 
-function Filter( {closeFilter} ) {
+function Filter({ closeFilter }) {
     const [selectedPreferences, setSelectedPreferences] = useState([]);
-    const [selectedRestriction, setSelectedRestriction] = useState([]);
+    const [selectedAllergies, setSelectedAllergies] = useState([]);
     const [selectedCostRange, setSelectedCostRange] = useState(null);
-    const [selectedSpice, setSelectedSpice] = useState(null); 
-
-    const [Preferences, setPreferences] = useSate([]);
-    const [Restriction, setRestriction] = useSate([]);
-    const [Cost, setCost] = useSate([]);
-    const [Spice, setSpice] = useSate([]);
+    const [selectedSpice, setSelectedSpice] = useState(null);
 
     const foodPreferences = [
         { id: 1, name: 'Vegetarian' },
         { id: 2, name: 'Vegan' },
         { id: 3, name: 'Gluten-Free' },
-        { id: 4, name: 'Halal' },
-        { id: 5, name: 'Kosher' },
-        { id: 6, name: 'Paleo' },
-        { id: 7, name: 'Keto' },
+        { id: 4, name: 'Halal Food' },
+        { id: 5, name: 'Kosher Food' },
+        { id: 6, name: 'Organic Food' },
+        { id: 7, name: 'Seafood Lover' },
+        { id: 8, name: 'Meat Lover' },
     ];
-    const ReligionRestriction = [
-        { id: 1, name: 'No Restriction' },
-        { id: 2, name: 'Halal' },
-        { id: 3, name: 'Hindu' },
-        { id: 4, name: 'Buddhist' },
-        { id: 5, name: 'jain' },
+
+    const AllergyInfo = [
+        { id: 1, name: 'Peanuts' },
+        { id: 2, name: 'Dairy' },
+        { id: 3, name: 'Gluten' },
+        { id: 4, name: 'Shellfish' },
+        { id: 5, name: 'Soy' },
     ];
+
     const CostRange = [
         { id: 1, name: 'Budget' },
         { id: 2, name: 'Moderate' },
         { id: 3, name: 'Expensive' },
         { id: 4, name: 'Luxury' },
     ];
+
     const SpiceLevel = [
         { id: 1, name: 1 },
         { id: 2, name: 2 },
@@ -42,65 +43,124 @@ function Filter( {closeFilter} ) {
         { id: 5, name: 5 },
     ];
 
+    // Toggle Functions
     const togglePreference = (id) => {
         setSelectedPreferences((prev) =>
-        prev.includes(id)
-            ? prev.filter((item) => item !== id)
-            : [...prev, id]
+            prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
         );
     };
-    const toggleRestriction = (id) => {
-        setSelectedRestriction((prev) =>
-        prev.includes(id)
-            ? prev.filter((item) => item !== id)
-            : [...prev, id]
+
+    const toggleAllergy = (id) => {
+        setSelectedAllergies((prev) =>
+            prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
         );
     };
+
     const toggleCostRange = (id) => {
         setSelectedCostRange((prev) => (prev === id ? null : id));
     };
+
     const toggleSpice = (id) => {
         setSelectedSpice((prev) => (prev === id ? null : id));
     };
 
+    async function handleSetFilter() {
+        const selectedPrefNames = foodPreferences
+            .filter(pref => selectedPreferences.includes(pref.id))
+            .map(pref => pref.name);
+
+        const selectedAllergyNames = AllergyInfo
+            .filter(allergy => selectedAllergies.includes(allergy.id))
+            .map(allergy => allergy.name);
+
+        try {
+            // Fetch all restaurants
+            const { data: restaurants, error } = await supabase.from("restaurant").select("*");
+
+            if (error) {
+                console.error("Error fetching restaurants:", error.message);
+                closeFilter(null);
+                return;
+            }
+
+            // Filter restaurants that match at least one filter criterion
+            const filteredRestaurants = restaurants.filter(restaurant => {
+                const matchesPreferences = selectedPrefNames.some(pref =>
+                    restaurant.food_preference?.toLowerCase().includes(pref.toLowerCase())
+                );
+                const matchesAllergies = selectedAllergyNames.every(allergy =>
+                    !restaurant.allergy?.toLowerCase().includes(allergy.toLowerCase())
+                );
+                const matchesCostRange = selectedCostRange
+                    ? restaurant.cost_range === CostRange.find(range => range.id === selectedCostRange)?.name
+                    : true;
+                const matchesSpice = selectedSpice
+                    ? restaurant.spice_level === selectedSpice
+                    : true;
+
+                return matchesPreferences && matchesAllergies && matchesCostRange && matchesSpice;
+            });
+
+            if (filteredRestaurants.length > 0) {
+                // Randomly select a restaurant from the filtered list
+                const randomRestaurant = filteredRestaurants[Math.floor(Math.random() * filteredRestaurants.length)];
+                console.log("Randomly Selected Restaurant:", randomRestaurant);
+                closeFilter(randomRestaurant);
+            } else {
+                console.log("No restaurants match the selected filters.");
+                closeFilter(null);
+            }
+        } catch (err) {
+            console.error("Unexpected error:", err);
+            closeFilter(null);
+        }
+    }
+
     return (
         <View style={styles.filter_container}>
+            {/* Food Preferences */}
             <View style={styles.food_preference}>
                 <Text>Food Preferences</Text>
                 <View style={styles.preference_checkbox}>
-                    {foodPreferences.map((item,index) => (
+                    {foodPreferences.map((item) => (
                         <TouchableOpacity
                             key={item.id}
                             style={[
-                            styles.food_preference_item,
-                            selectedPreferences.includes(item.id) && styles.colorfoodPreference,
+                                styles.food_preference_item,
+                                selectedPreferences.includes(item.id) && styles.colorfoodPreference,
                             ]}
-                            onPress={() => [togglePreference(item.id), setPreferences.append(item.name)]}
+                            onPress={() => togglePreference(item.id)}
                         >
                             <Text style={styles.food_preference_text}>{item.name}</Text>
                         </TouchableOpacity>
                     ))}
-                </View> 
+                </View>
             </View>
+
             <View style={styles.horizontal_line} />
+
+            {/* Allergy Info */}
             <View style={styles.food_preference}>
-                <Text>Religion Restriction</Text>
+                <Text>Allergy Information</Text>
                 <View style={styles.preference_checkbox}>
-                    {ReligionRestriction.map((item,index) => (
+                    {AllergyInfo.map((item) => (
                         <TouchableOpacity
                             key={item.id}
                             style={[
-                            styles.food_preference_item,
-                            selectedRestriction.includes(item.id) && styles.colorfoodPreference,
+                                styles.food_preference_item,
+                                selectedAllergies.includes(item.id) && styles.colorfoodPreference,
                             ]}
-                            onPress={() => toggleRestriction(item.id)}
+                            onPress={() => toggleAllergy(item.id)}
                         >
                             <Text style={styles.food_preference_text}>{item.name}</Text>
                         </TouchableOpacity>
                     ))}
-                </View> 
+                </View>
             </View>
+
             <View style={styles.horizontal_line} />
+
+            {/* Cost Range */}
             <View style={styles.food_preference}>
                 <Text>Cost Range</Text>
                 <View style={styles.preference_checkbox}>
@@ -109,7 +169,7 @@ function Filter( {closeFilter} ) {
                             key={item.id}
                             style={[
                                 styles.food_preference_item,
-                                selectedCostRange === item.id && styles.colorfoodPreference, // Highlight selected item
+                                selectedCostRange === item.id && styles.colorfoodPreference,
                             ]}
                             onPress={() => toggleCostRange(item.id)}
                         >
@@ -118,11 +178,14 @@ function Filter( {closeFilter} ) {
                     ))}
                 </View>
             </View>
+
             <View style={styles.horizontal_line} />
+
+            {/* Spice Level */}
             <View style={styles.food_preference}>
                 <Text>Spice Level</Text>
-                <View style={[styles.preference_checkbox, {justifyContent: 'center', gap: 20}]}>
-                    <Text style={{fontSize: 12, marginTop: 10}}>lowest</Text>
+                <View style={[styles.preference_checkbox, { justifyContent: 'center', gap: 20 }]}>
+                    <Text style={{ fontSize: 12, marginTop: 10 }}>lowest</Text>
                     {SpiceLevel.map((level) => (
                         <TouchableOpacity
                             key={level.id}
@@ -135,22 +198,12 @@ function Filter( {closeFilter} ) {
                             <Text style={styles.food_preference_text}>{level.name}</Text>
                         </TouchableOpacity>
                     ))}
-                    <Text style={{fontSize: 12, marginTop: 10}}>highest</Text>
+                    <Text style={{ fontSize: 12, marginTop: 10 }}>highest</Text>
                 </View>
             </View>
-            <View style={styles.horizontal_line} />
-            <View style={[styles.food_preference, { gap: 25 }]}>
-                <Text>Distance</Text>
-                <View style={styles.dietary_restrictions}>
-                    <View style={styles.circle} />
-                    <View style={styles.line} />
-                </View>
-                <View style={styles.text_distance}>
-                    <Text>1 meter</Text>
-                    <Text>Max</Text>
-                </View>
-            </View>
-            <TouchableOpacity onPress={closeFilter}>
+
+            {/* Submit Button */}
+            <TouchableOpacity onPress={handleSetFilter}>
                 <View style={styles.homepage_random}>
                     <Text style={styles.random_button}>Set Filter</Text>
                 </View>
@@ -189,32 +242,6 @@ const styles = StyleSheet.create({
     },
     colorfoodPreference: {
         backgroundColor: 'lightblue',
-    },
-    dietary_restrictions: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    circle: {
-        width: 20,
-        height: 20,
-        borderRadius: 50,
-        borderColor: 'black',
-        borderWidth: 2,
-        backgroundColor: 'white',
-    },
-    line: {
-        height: 2,
-        width: '80%',
-        backgroundColor: 'black',
-    },
-    text_distance: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        width: '90%',
-        marginLeft: 20,
-        marginTop: -20,
     },
     homepage_random: {
         backgroundColor: 'rgb(49, 159, 255)',
