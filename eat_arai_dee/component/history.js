@@ -1,44 +1,36 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, Linking } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, Linking, ActivityIndicator } from "react-native";
+import { supabase } from "./connect";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function History({ closeHistory }) {
     const [expandedItemId, setExpandedItemId] = useState(null);
+    const [historyData, setHistoryData] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const historyData = [
-        {
-            id: 1,
-            restaurantName: "Pizza Paradise",
-            date: "2025-04-20",
-            image: require("../image/pizza_restuarant.jpg"),
-            details: "Famous for its wood-fired pizzas and cozy ambiance.",
-            openDay: "Monday - Friday",
-            openTime: "10:00 AM",
-            closeTime: "10:00 PM",
-            locationLink: "https://maps.google.com/?q=Pizza+Paradise",
-        },
-        {
-            id: 2,
-            restaurantName: "Sushi World",
-            date: "2025-04-18",
-            image: require("../image/sushi_restuarant.jpg"),
-            details: "Known for its fresh sushi and authentic Japanese cuisine.",
-            openDay: "Everyday",
-            openTime: "11:00 AM",
-            closeTime: "9:00 PM",
-            locationLink: "https://maps.google.com/?q=Sushi+World",
-        },
-        {
-            id: 3,
-            restaurantName: "Burger Haven",
-            date: "2025-04-15",
-            image: require("../image/burger_restuarant.jpg"),
-            details: "Offers a variety of gourmet burgers and craft beers.",
-            openDay: "Weekends",
-            openTime: "12:00 PM",
-            closeTime: "11:00 PM",
-            locationLink: "https://maps.google.com/?q=Burger+Haven",
-        },
-    ];
+    useEffect(() => {
+        const fetchHistory = async () => {
+            try {
+                const userId = await AsyncStorage.getItem('userId');
+                const { data, error } = await supabase
+                    .from('history')
+                    .select('history_id, restaurant_id, time, restaurant(*)')
+                    .eq('user_id', parseInt(userId, 10));
+
+                if (error) {
+                    console.error("Error fetching history:", error);
+                } else {
+                    setHistoryData(data);
+                }
+            } catch (err) {
+                console.error("Error:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchHistory();
+    }, []);
 
     const toggleDetails = (id) => {
         setExpandedItemId(expandedItemId === id ? null : id);
@@ -48,36 +40,46 @@ function History({ closeHistory }) {
         Linking.openURL(link);
     };
 
+    if (loading) {
+        return (
+            <View style={styles.container}>
+                <ActivityIndicator size="large" color="#007BFF" />
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>History</Text>
             <ScrollView>
                 {historyData.map((item) => (
-                    <View key={item.id} style={styles.historyItem}>
+                    <View key={item.history_id} style={styles.historyItem}>
                         <View style={styles.row}>
-                            <Image source={item.image} style={styles.image} />
-                            <View style={styles.details}>
-                                <Text style={styles.restaurantName}>{item.restaurantName}</Text>
-                                <Text style={styles.date}>{item.date}</Text>
-                            </View>
+                            {/* Ensure item.restaurant exists before accessing its properties */}
+                            {item.restaurant && (
+                                <View style={styles.details}>
+                                    <Text style={styles.restaurantName}>{item.restaurant.restaurant_name}</Text>
+                                    <Text style={styles.date}>{new Date(item.time).toLocaleString()}</Text>
+                                </View>
+                            )}
                             <TouchableOpacity
                                 style={styles.moreDetailsButton}
-                                onPress={() => toggleDetails(item.id)}
+                                onPress={() => toggleDetails(item.history_id)}
                             >
                                 <Text style={styles.moreDetailsButtonText}>
-                                    {expandedItemId === item.id ? "Hide Details" : "More Details"}
+                                    {expandedItemId === item.history_id ? "Hide Details" : "More Details"}
                                 </Text>
                             </TouchableOpacity>
                         </View>
-                        {expandedItemId === item.id && (
+                        {expandedItemId === item.history_id && item.restaurant && (
                             <View style={styles.expandedDetails}>
-                                <Text style={styles.detailText}>Open Days: {item.openDay}</Text>
+                                <Text style={styles.detailText}>Open Days: {item.restaurant.open_day}</Text>
                                 <Text style={styles.detailText}>
-                                    Time: {item.openTime} - {item.closeTime}
+                                    Time: {item.restaurant.open_time} - {item.restaurant.close_time}
                                 </Text>
-                                <View style={styles.locationText} >
+                                <View style={styles.locationText}>
                                     <Text>Location: </Text>
-                                    <TouchableOpacity onPress={() => handleOpenLink(item.locationLink)}>
+                                    <TouchableOpacity onPress={() => handleOpenLink(item.restaurant.location_link)}>
                                         <Text style={[styles.detailText, styles.linkText]}>
                                             View Location
                                         </Text>
@@ -145,7 +147,7 @@ const styles = StyleSheet.create({
     },
     expandedDetails: {
         marginTop: 10,
-            backgroundColor: "rgb(200, 230, 255)",
+        backgroundColor: "rgb(200, 230, 255)",
         padding: 10,
         borderRadius: 5,
     },

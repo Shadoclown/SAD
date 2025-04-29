@@ -1,44 +1,124 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ImagePicker from 'expo-image-picker'; // Use expo-image-picker if using Expo
+import { supabase } from './connect';
 
 function EditProfile({ closeEditProfile }) {
+    const [userId, setUserId] = useState(null);
+    const [Newusername, setNewUsername] = useState('');
+    const [Newemail, setNewEmail] = useState('');
+    const [Newpassword, setNewPassword] = useState('');
+    const [username, setUsername] = useState(null);
+    const [email, setEmail] = useState(null);
+    const [password, setPassword] = useState(null);
+    const [profileImage, setProfileImage] = useState(null); // State for profile image
+
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            const userId = await AsyncStorage.getItem('userId');
+            if (userId) {
+                setUserId(userId);
+            } else {
+                setUserId(null);
+            }
+        };
+
+        const fetchUserData = async () => {
+            if (userId) {
+                const { data, error } = await supabase
+                    .from('user')
+                    .select('username, email, password')
+                    .eq('user_id', parseInt(userId, 10));
+
+                if (error) {
+                    console.error('Error fetching user data:', error.message);
+                } else if (data && data.length > 0) {
+                    setUsername(data[0].username);
+                    setEmail(data[0].email);
+                    setPassword(data[0].password);
+                }
+            }
+        };
+
+        const loadProfileImage = async () => {
+            const savedImage = await AsyncStorage.getItem('profileImage');
+            if (savedImage) {
+                setProfileImage(savedImage);
+            }
+        };
+
+        checkLoginStatus();
+        fetchUserData();
+        loadProfileImage();
+    }, [userId]);
+
+    const changeProfileImage = async () => {
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (!permissionResult.granted) {
+            alert('Permission to access the gallery is required!');
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            const imageUri = result.assets[0].uri; // Get the selected image URI
+            setProfileImage(imageUri); // Update state
+            await AsyncStorage.setItem('profileImage', imageUri); // Save to AsyncStorage
+        }
+    };
 
     return (
         <View style={styles.container}>
             <View style={styles.user_profile}>
                 <Image 
-                    source={require('../image/profile_image.png')}
+                    source={profileImage ? { uri: profileImage } : require('../image/profile_image.png')}
                     style={styles.profile_image}
                 />
-                <TouchableOpacity style={styles.edit_image_button}>
+                <TouchableOpacity style={styles.edit_image_button} onPress={changeProfileImage}>
                     <Text style={styles.edit_image_text}>Change Profile</Text>
                 </TouchableOpacity>     
             </View>
 
-            <Text style={styles.label}>Name</Text>
+            <Text style={styles.label}>Enter New Name</Text>
             <TextInput
                 style={styles.input}
-                placeholder="Enter your name"
-                value='New Name'
+                placeholder={username}
+                value={Newusername}
+                onChangeText={setNewUsername}
             />
 
-            <Text style={styles.label}>Email</Text>
+            <Text style={styles.label}>Enter New Email</Text>
             <TextInput
                 style={styles.input}
-                placeholder="Enter your email"
-                value="New Email"
+                placeholder={email}
+                value={Newemail}
+                onChangeText={setNewEmail}
                 keyboardType="email-address"
             />
 
-            <Text style={styles.label}>Password</Text>
+            <Text style={styles.label}>Enter New Password</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Enter your password"
-                value="New Password"
+                value={Newpassword}
+                onChangeText={setNewPassword}
                 secureTextEntry
             />
 
-            <TouchableOpacity style={styles.saveButton} onPress={closeEditProfile}>
+            <TouchableOpacity 
+                style={styles.saveButton} 
+                onPress={() => {
+                    updateProfile();
+                    closeEditProfile();
+                }}
+            >
                 <Text style={styles.saveButtonText}>Save</Text>
             </TouchableOpacity>
         </View>
@@ -76,12 +156,6 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         color: 'white',
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        textAlign: 'center',
     },
     label: {
         fontSize: 16,

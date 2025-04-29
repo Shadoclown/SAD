@@ -8,6 +8,8 @@ import Signup from './component/signup';
 import Setting from './component/setting';
 import EditProfile from './component/edit_prfile';
 import Histroy from './component/history';
+import ForgetPass from './component/forgetpass';
+import OTP from './component/otp';
 
 export default function App() {
   const [isPageOpen, setisPageOpen] = useState("Homepage");
@@ -66,8 +68,9 @@ export default function App() {
       {isPageOpen === "Login" && (
         <ScrollView contentContainerStyle={styles.scollContent}>
           <Login closeLogin={() => [setisPageOpen('Homepage'), setisLogin(true)]}
-                  gotoSignup={() => setisPageOpen('Signup')
-          } />
+                  gotoSignup={() => setisPageOpen('Signup')} 
+                  gotoFpass={() => setisPageOpen('ForgetPass')}        
+          />
         </ScrollView>
       )}
       {isPageOpen === "Signup" && (
@@ -97,12 +100,25 @@ export default function App() {
       )}
       {isPageOpen === "EditProfile" && (
         <ScrollView contentContainerStyle={styles.scollContent}>
-          <EditProfile closeEditProfile={() => setisPageOpen('Setting')}/>
+          <EditProfile closeEditProfile={() => setisPageOpen('Homepage')}/>
         </ScrollView> 
       )}
       {isPageOpen === "History" && (
         <ScrollView contentContainerStyle={styles.scollContent}>
           <Histroy  closeHistory={() => setisPageOpen('Setting')}/>
+        </ScrollView>
+      )}
+      {isPageOpen === "ForgetPass" && (
+        <ScrollView contentContainerStyle={styles.scollContent}>
+          <ForgetPass closeFpass={() => setisPageOpen('Login')}
+                      gotoLogin={() => setisPageOpen('Login')}
+                      gotocheckOTP={() => setisPageOpen('OTP')}/>
+        </ScrollView>
+      )}
+      {isPageOpen === "OTP" && (
+        <ScrollView contentContainerStyle={styles.scollContent}>
+          <OTP closeFpass={() => setisPageOpen('Login')}
+              gotoLogin={() => setisPageOpen('Login')}/>
         </ScrollView>
       )}
 

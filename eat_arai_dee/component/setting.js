@@ -1,7 +1,39 @@
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabase } from './connect';
 
 function Setting( {closeSetting, logout, gotoEdit, gotoHistory} ) {
+    const [userId, setUserId] = useState(null);
+    const [username, setUsername] = useState(null);
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            const storedUserId = await AsyncStorage.getItem('userId');
+            const parsedUserId = parseInt(storedUserId, 10);
+
+            if (!isNaN(parsedUserId)) {
+                setUserId(parsedUserId);
+
+                const { data, error } = await supabase
+                    .from('user')
+                    .select('username')
+                    .eq('user_id', parsedUserId)
+                    .single();
+
+                if (error) {
+                    console.error("Error fetching username:", error);
+                } else {
+                    setUsername(data.username);
+                }
+            } else {
+                console.error("Invalid userId:", storedUserId);
+                setUserId(null);
+            }
+        };
+
+        checkLoginStatus();
+    }, []);
+
     function haddleLogout() {
         AsyncStorage.removeItem('userId')
         logout();
@@ -13,7 +45,7 @@ function Setting( {closeSetting, logout, gotoEdit, gotoHistory} ) {
                     source={require('../image/profile_image.png')}
                     style={styles.profile_image}
                 />
-                <Text style={styles.username}>KunTang</Text>
+                <Text style={styles.username}>{userId ? username:"Guest"}</Text>
             </View>
             <TouchableOpacity style={styles.info_button} onPress={gotoEdit}>
                 <Text style={styles.info_button_text}>Personal Information Setting</Text>

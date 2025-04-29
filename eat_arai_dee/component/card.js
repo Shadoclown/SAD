@@ -4,7 +4,7 @@ import { supabase } from './connect';
 import { userId } from './login';
 
 // Accept foodPreference as a prop instead of fetching category internally
-function Card({ name, location, rating, price, spiceLevel, restaurantId, image, openDay, openTime, closeTime, locationLink, userId, foodPreference }) {
+function Card({ name, location, rating, price, spiceLevel, restaurantId, restaurant_image, openDay, openTime, closeTime, locationLink, userId, foodPreference }) {
     const [ViewMore, setViewMore] = useState(false);
     const [ViewDetail, setViewDetail] = useState("detail");
     const [isLogin, setisLogin]  = useState(false);
@@ -18,7 +18,7 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, image, 
             if (error) {
                 console.error("Error fetching menu:", error.message);
             } else {
-                setMenu(data || []); // Ensure Menu is an array
+                setMenu(data || []);
             }
         }
 
@@ -57,8 +57,8 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, image, 
         <View style={styles.card_container}>
             <View style={[styles.card_content, ViewMore && styles.card_content_expanded]}>
                 <View style={styles.card_image}>
-                    {image ? (
-                        <Image source={image} style={styles.card_resturant_image} />
+                    {restaurant_image ? (
+                        <Image source={{ uri: restaurant_image }} style={styles.card_resturant_image} />
                     ) : (
                         <View style={styles.placeholder_image}>
                             <Text style={styles.placeholder_text}>No Image Available</Text>
@@ -115,16 +115,15 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, image, 
                                 <Text style={styles.menu_text}>Recommended Menu</Text>
                                 {/* Ensure Menu is an array before mapping */}
                                 {Array.isArray(Menu) && Menu.length > 0 ? (
-                                    Menu.map((item) => (
-                                        <View key={item.menu_id} style={styles.menu_item}>
-                                            {/* Placeholder image, replace with actual if available */}
+                                    Menu.map((menu, index) => (
+                                        <View key={`${menu.menu_id}-${index}`} style={styles.menu_item}>
                                             <Image
-                                                source={{ uri: 'https://via.placeholder.com/50' }}
+                                                source={{ uri: menu.image }}
                                                 style={styles.menu_item_image}
                                             />
                                             <View style={styles.menu_item_details}>
-                                                <Text style={styles.menu_item_name}>{item.menu_name}</Text>
-                                                <Text style={styles.menu_item_price}>฿{item.price}</Text>
+                                                <Text style={styles.menu_item_name}>{menu.menu_name}</Text>
+                                                <Text style={styles.menu_item_price}>฿{menu.price}</Text>
                                             </View>
                                         </View>
                                     ))

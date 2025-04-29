@@ -3,7 +3,8 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert } fro
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from './connect';
 
-function Login({ closeLogin, gotoSignup }) {
+
+function Login({ closeLogin, gotoSignup, gotoFpass }) {
     const [Username, setUsername] = useState('');
     const [Password, setPassword] = useState('');
     const [islogin, setislogin] = useState(false);
@@ -72,11 +73,11 @@ function Login({ closeLogin, gotoSignup }) {
                 secureTextEntry
             />
 
-            <TouchableOpacity style={styles.forgot_button} onPress={closeLogin}>
+            <TouchableOpacity style={styles.forgot_button} onPress={() => gotoFpass()}>
                 <Text style={styles.forgot}>Forgot Password</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button} onPress={() => { checkLogin(); setislogin(true); }}>
+            <TouchableOpacity style={styles.button} onPress={() => { closeLogin(); setislogin(true); }}>
                 <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
 

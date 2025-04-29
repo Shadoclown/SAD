@@ -6,3 +6,14 @@ npm install @react-native-async-storage/async-storage
 
 -- timeZone --
 npm install date-fns-tz
+
+-- recat dom --
+npm install react-router-dom
+
+-- navigate --
+npm install @react-navigation/native
+npm install @react-navigation/native react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-reanimated react-native-vector-icons
+npx pod-install
+
+-- image --
+npm install expo-image-picker

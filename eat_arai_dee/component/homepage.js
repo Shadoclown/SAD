@@ -11,59 +11,16 @@ function Homepage({ userId, filter_preferences, filter_allergies, filter_costRan
 
   const [restaurant, setRestaurant] = useState([]);
 
-  const restaurants_more = [
-    {
-      id: 1,
-      image: require("../image/pizza_restuarant.jpg"),
-    },
-    {
-      id: 2,
-      image: require("../image/sushi_restuarant.jpg"),
-    },
-    {
-      id: 3,
-      image: require("../image/burger_restuarant.jpg"),
-    },
-    {
-      id: 4,
-      image: require("../image/burger_restuarant.jpg"),
-    },
-    {
-      id: 5,
-      image: require("../image/burger_restuarant.jpg"),
-    },
-    {
-      id: 6,
-      image: require("../image/burger_restuarant.jpg"),
-    },
-    {
-      id: 7,
-      image: require("../image/burger_restuarant.jpg"),
-    },
-    {
-      id: 8,
-      image: require("../image/burger_restuarant.jpg"),
-    },
-    {
-      id: 9,
-      image: require("../image/burger_restuarant.jpg"),
-    },
-    {
-      id: 10,
-      image: require("../image/burger_restuarant.jpg"),
-    }
-  ];
-
   useEffect(() => {
     async function fetchRestaurants() {
-      console.log("Fetching restaurants with filters:", {
-        preferences: filter_preferences,
-        allergies: filter_allergies,
-        costRange: filter_costRange,
-        spiceLevel: filter_spiceLevel,
-      });
+      // console.log("Fetching restaurants with filters:", {
+      //   preferences: filter_preferences,
+      //   allergies: filter_allergies,
+      //   costRange: filter_costRange,
+      //   spiceLevel: filter_spiceLevel,
+      // });
       try {
-        let query = supabase.from('restaurant_with_categories').select('*');
+        let query = supabase.from('restaurant_details_view').select('*');
         query = applyFilters(query, {
           preferences: filter_preferences,
           allergies: filter_allergies,
@@ -76,8 +33,8 @@ function Homepage({ userId, filter_preferences, filter_allergies, filter_costRan
         if (error) {
           console.error('Error fetching restaurants:', error);
         } else {
-          setRestaurant(data || []);
-          console.log("Fetched data:", data);
+          setRestaurant(data);
+          // console.log("Fetched data:", data);
         }
       } catch (error) {
         console.error('Error in fetchRestaurants:', error);
@@ -184,41 +141,35 @@ function Homepage({ userId, filter_preferences, filter_allergies, filter_costRan
       )}
 
       {random && israndom !== undefined ? (
-        <Card
-          key={israndom.restaurant_id}
-          name={israndom.restaurant_name}
-          location={israndom.location}
-          rating={israndom.rating}
-          price={israndom.price}
-          spiceLevel={israndom.spice_level}
-          restaurantId={israndom.restaurant_id}
-          image={
-            restaurants_more.find(
-              (item) => item.id === israndom.restaurant_id
-            )?.image || require("../image/burger_restuarant.jpg")
-          }
-          openDay={israndom.open_day}
-          openTime={formatTime(israndom.open_time)}
-          closeTime={formatTime(israndom.close_time)}
-          locationLink={israndom.location_link}
-          foodPreference={israndom.food_preference}
-          userId={userId}
-        />
-      ) : (
-        shuffleRecommend().map((restaurant) => (
+        <>
           <Card
-            key={restaurant.restaurant_id}
+            key={israndom.restaurant_id}
+            name={israndom.restaurant_name}
+            location={israndom.location}
+            rating={israndom.rating}
+            price={israndom.price}
+            spiceLevel={israndom.spice_level}
+            restaurantId={israndom.restaurant_id}
+            restaurant_image={israndom.image}
+            openDay={israndom.open_day}
+            openTime={formatTime(israndom.open_time)}
+            closeTime={formatTime(israndom.close_time)}
+            locationLink={israndom.location_link}
+            foodPreference={israndom.food_preference}
+            userId={userId}
+          />
+        </>
+      ) : (
+        shuffleRecommend().map((restaurant, index) => (
+          <Card
+            key={`${restaurant.restaurant_id}-${index}`} // Ensure a unique key
             name={restaurant.restaurant_name}
             location={restaurant.location}
             rating={restaurant.rating}
             price={restaurant.price}
             spiceLevel={restaurant.spice_level}
             restaurantId={restaurant.restaurant_id}
-            image={
-              restaurants_more.find(
-                (item) => item.id === restaurant.restaurant_id
-              )?.image || require("../image/burger_restuarant.jpg")
-            }
+            restaurant_image={restaurant.image}
             openDay={restaurant.open_day}
             openTime={formatTime(restaurant.open_time)}
             closeTime={formatTime(restaurant.close_time)}
