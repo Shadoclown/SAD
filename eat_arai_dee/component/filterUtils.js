@@ -2,16 +2,16 @@ export function applyFilters(query, filters) {
   // Food preferences (JSONB array match - contains ALL)
   if (filters.preferences.length > 0) {
     const orConditions = filters.preferences
-      .map(pref => `food_preference.cs.{${JSON.stringify([pref]).slice(1, -1)}}`)
+      .map(pref => `food_preference.cs.${JSON.stringify([pref])}`)
       .join(',');
     query = query.or(orConditions);
+    console.log("Preference filter applied:", filters.preferences);
   }
-  
 
   // Allergies (JSONB array match - contains ALL)
   if (filters.allergies && filters.allergies.length > 0) {
     const orConditions = filters.allergies
-      .map(allergy => `allergy.cs.{${JSON.stringify([allergy]).slice(1, -1)}}`)
+      .map(allergy => `allergy.cs.${JSON.stringify([allergy])}`)
       .join(',');
     query = query.or(orConditions);
     console.log("Allergies filter applied:", filters.allergies);
