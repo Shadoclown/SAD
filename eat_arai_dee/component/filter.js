@@ -1,13 +1,13 @@
-import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { supabase } from './connect';
 
-function Filter({ closeFilter }) {
-    const [selectedPreferences, setSelectedPreferences] = useState([]);
-    const [selectedAllergies, setSelectedAllergies] = useState([]);
-    const [selectedCostRange, setSelectedCostRange] = useState(null);
-    const [selectedSpice, setSelectedSpice] = useState(null);
+function Filter({ closeFilter, setFilters }) {
+    const [filters, setLocalFilters] = useState({
+        preferences: [],
+        allergies: [],
+        costRange: null,
+        spiceLevel: null,
+    });
 
     const foodPreferences = [
         { id: 1, name: 'Vegetarian' },
@@ -43,46 +43,22 @@ function Filter({ closeFilter }) {
         { id: 5, name: 5 },
     ];
 
-    // Toggle Functions
-    const togglePreference = (name) => {
-        setSelectedPreferences((prev) =>
-            prev.includes(name) ? prev.filter((item) => item !== name) : [...prev, name]
-        );
+    const toggleFilter = (key, value) => {
+        setLocalFilters(prev => {
+            if (Array.isArray(prev[key])) {
+                const updated = prev[key].includes(value)
+                    ? prev[key].filter(item => item !== value)
+                    : [...prev[key], value];
+                return { ...prev, [key]: updated };
+            }
+            return { ...prev, [key]: prev[key] === value ? null : value };
+        });
     };
 
-    const toggleAllergy = (name) => {
-        setSelectedAllergies((prev) =>
-            prev.includes(name) ? prev.filter((item) => item !== name) : [...prev, name]
-        );
+    const handleSetFilter = () => {
+        setFilters(filters);
+        closeFilter();
     };
-
-    const toggleCostRange = (id) => {
-        setSelectedCostRange((prev) => (prev === id ? null : id));
-    };
-
-    const toggleSpice = (name) => {
-        setSelectedSpice((prev) => (prev === name ? null : name));
-    };
-
-    async function handleSetFilter() {
-        if (selectedPreferences.length === 0 && selectedAllergies.length === 0 && selectedCostRange === null && selectedSpice === null) {
-            closeFilter();
-            await AsyncStorage.setItem('isfilter', 'false')
-            Alert.alert("Error", "No filter is selected.");
-
-        } else {
-            Storage();
-            await AsyncStorage.setItem('isfilter', 'true')
-            closeFilter();
-        }
-    }
-
-    async function Storage() {
-        await AsyncStorage.setItem('selectedPreferences', JSON.stringify(selectedPreferences.length > 0 ? selectedPreferences : []));
-        await AsyncStorage.setItem('selectedAllergies', JSON.stringify(selectedAllergies.length > 0 ? selectedAllergies : []));
-        await AsyncStorage.setItem('selectedCostRange', selectedCostRange ? JSON.stringify(selectedCostRange) : '');
-        await AsyncStorage.setItem('selectedSpice', selectedSpice ? JSON.stringify(selectedSpice) : '');
-    }
 
     return (
         <View style={styles.filter_container}>
@@ -90,14 +66,14 @@ function Filter({ closeFilter }) {
             <View style={styles.food_preference}>
                 <Text>Food Preferences</Text>
                 <View style={styles.preference_checkbox}>
-                    {foodPreferences.map((item) => (
+                    {foodPreferences.map(item => (
                         <TouchableOpacity
                             key={item.id}
                             style={[
                                 styles.food_preference_item,
-                                selectedPreferences.includes(item.name) && styles.colorfoodPreference,
+                                filters.preferences.includes(item.name) && styles.colorfoodPreference,
                             ]}
-                            onPress={() => togglePreference(item.name)}
+                            onPress={() => toggleFilter('preferences', item.name)}
                         >
                             <Text style={styles.food_preference_text}>{item.name}</Text>
                         </TouchableOpacity>
@@ -111,14 +87,14 @@ function Filter({ closeFilter }) {
             <View style={styles.food_preference}>
                 <Text>Allergy Information</Text>
                 <View style={styles.preference_checkbox}>
-                    {AllergyInfo.map((item) => (
+                    {AllergyInfo.map(item => (
                         <TouchableOpacity
                             key={item.id}
                             style={[
                                 styles.food_preference_item,
-                                selectedAllergies.includes(item.name) && styles.colorfoodPreference,
+                                filters.allergies.includes(item.name) && styles.colorfoodPreference,
                             ]}
-                            onPress={() => toggleAllergy(item.name)}
+                            onPress={() => toggleFilter('allergies', item.name)}
                         >
                             <Text style={styles.food_preference_text}>{item.name}</Text>
                         </TouchableOpacity>
@@ -132,14 +108,14 @@ function Filter({ closeFilter }) {
             <View style={styles.food_preference}>
                 <Text>Cost Range</Text>
                 <View style={styles.preference_checkbox}>
-                    {CostRange.map((item) => (
+                    {CostRange.map(item => (
                         <TouchableOpacity
                             key={item.id}
                             style={[
                                 styles.food_preference_item,
-                                selectedCostRange === item.id && styles.colorfoodPreference,
+                                filters.costRange === item.id && styles.colorfoodPreference,
                             ]}
-                            onPress={() => toggleCostRange(item.id)}
+                            onPress={() => toggleFilter('costRange', item.id)}
                         >
                             <Text style={styles.food_preference_text}>{item.name}</Text>
                         </TouchableOpacity>
@@ -154,14 +130,14 @@ function Filter({ closeFilter }) {
                 <Text>Spice Level</Text>
                 <View style={[styles.preference_checkbox, { justifyContent: 'center', gap: 20 }]}>
                     <Text style={{ fontSize: 12, marginTop: 10 }}>lowest</Text>
-                    {SpiceLevel.map((level) => (
+                    {SpiceLevel.map(level => (
                         <TouchableOpacity
                             key={level.id}
                             style={[
                                 styles.food_preference_item,
-                                selectedSpice === level.name && styles.colorfoodPreference,
+                                filters.spiceLevel === level.name && styles.colorfoodPreference,
                             ]}
-                            onPress={() => toggleSpice(level.name)}
+                            onPress={() => toggleFilter('spiceLevel', level.name)}
                         >
                             <Text style={styles.food_preference_text}>{level.name}</Text>
                         </TouchableOpacity>

@@ -14,6 +14,13 @@ export default function App() {
   const [isLogin, setisLogin] = useState(false);
   const [UserId, setUserId ] = useState(null);
 
+  const [filters, setFilters] = useState({
+    preferences: [],
+    allergies: [],
+    costRange: null,
+    spiceLevel: null,
+  });
+
   useEffect(() => {
     const checkLoginStatus = async () => {
       const userId = await AsyncStorage.getItem('userId');
@@ -50,7 +57,10 @@ export default function App() {
 
       {isPageOpen === "Filter" && (
         <ScrollView contentContainerStyle={styles.scollContent}>
-          <Filter closeFilter={() => setisPageOpen("Homepage")} />
+            <Filter
+                closeFilter={() => setisPageOpen("Homepage")}
+                setFilters={setFilters}
+            />
         </ScrollView>
       )}
       {isPageOpen === "Login" && (
@@ -76,7 +86,13 @@ export default function App() {
       )}
       {isPageOpen === "Homepage" && (
         <ScrollView contentContainerStyle={styles.scollContent}>
-          <Homepage userId={UserId} />
+            <Homepage
+                userId={UserId}
+                filter_preferences={filters.preferences}
+                filter_allergies={filters.allergies}
+                filter_costRange={filters.costRange}
+                filter_spiceLevel={filters.spiceLevel}
+            />
         </ScrollView>
       )}
       {isPageOpen === "EditProfile" && (

@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Card from "./card";
-import {supabase} from "./connect";
+import { supabase } from "./connect";
+import { applyFilters } from "./filterUtils";
 
-function Homepage( {userId}) {
+function Homepage({ userId, filter_preferences, filter_allergies, filter_costRange, filter_spiceLevel }) {
   const [selectedFilter, setSelectedFilter] = useState("Individual");
   const [random, setRandom] = useState(false);
   const [israndom, setIsRandom] = useState();
@@ -56,71 +56,52 @@ function Homepage( {userId}) {
 
   useEffect(() => {
     async function fetchRestaurants() {
-        try {
-            const isfilter = await AsyncStorage.getItem('isfilter');
-            const foodPreferences = JSON.parse(await AsyncStorage.getItem('selectedPreferences')) || [];
-            const AllergyInfo = JSON.parse(await AsyncStorage.getItem('selectedAllergies')) || [];
-            const CostRange = await AsyncStorage.getItem('selectedCostRange') || "";
-            const Spice = await AsyncStorage.getItem('selectedSpice') || "";
+      console.log("Fetching restaurants with filters:", {
+        preferences: filter_preferences,
+        allergies: filter_allergies,
+        costRange: filter_costRange,
+        spiceLevel: filter_spiceLevel,
+      });
+      try {
+        let query = supabase.from('restaurant_with_categories').select('*');
+        query = applyFilters(query, {
+          preferences: filter_preferences,
+          allergies: filter_allergies,
+          costRange: filter_costRange,
+          spiceLevel: filter_spiceLevel
+        });
 
-            
+        const { data, error } = await query;
 
-            let query = supabase
-                .from('restaurant')
-                .select('*, category(*)');
-
-            if (isfilter === "true") {
-                if (Array.isArray(foodPreferences) &&foodPreferences.length > 0) {
-                    query = query.contains('category.food_preference', foodPreferences);
-                    console.log("contains by foodPreferences:", foodPreferences);
-                }
-                if (Array.isArray(AllergyInfo) && AllergyInfo.length > 0) {
-                    query = query.contains('category.allergy', AllergyInfo);
-                    console.log("contains by AllergyInfo:", AllergyInfo);
-                }
-                if (CostRange !== "") {
-                    query = query.eq('price', parseInt(CostRange, 10));
-                    console.log("Filtering by CostRange:", CostRange);
-                }
-                if (Spice !== "") {
-                    query = query.eq('spice_level', parseInt(Spice, 10));
-                    console.log("Filtering by Spice:", Spice);
-                }
-            }
-
-            const { data, error } = await query;
-
-            if (error) {
-                console.error('Error fetching restaurants:', error);
-            } else {
-                setRestaurant(data || []);
-            }
-        } catch (error) {
-            console.error('Error in fetchRestaurants:', error);
+        if (error) {
+          console.error('Error fetching restaurants:', error);
+        } else {
+          setRestaurant(data || []);
+          console.log("Fetched data:", data);
         }
+      } catch (error) {
+        console.error('Error in fetchRestaurants:', error);
+      }
     }
 
     fetchRestaurants();
-}, []);
-  
+  }, [userId, filter_preferences, filter_allergies, filter_costRange, filter_spiceLevel]);
   
   async function handleRandom() {
     if (!restaurant || restaurant.length === 0) {
-        console.error("No restaurants available for random selection.");
-        return;
+      console.error("No restaurants available for random selection.");
+      return;
     }
     const randomIndex = Math.floor(Math.random() * restaurant.length);
     setRandom(true);
     setIsRandom(restaurant[randomIndex]);
   }
-  
-  
 
   function formatTime(timeString) {
     if (!timeString) return "N/A";
     const [hours, minutes] = timeString.split(":");
     return `${hours}:${minutes}`;
-  }  
+  }
 
   function shuffleRecommend() {
     const final_shuffle = [];

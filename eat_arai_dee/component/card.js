@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity, Linking, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { supabase } from './connect'; // Ensure Supabase is properly imported
-import { userId } from './login'; // Ensure userId is properly imported or passed as a prop
+import { supabase } from './connect';
+import { userId } from './login';
 
 function Card({ name, location, rating, price, spiceLevel, restaurantId, image, openDay, openTime, closeTime, locationLink, userId }) {
     const [ViewMore, setViewMore] = useState(false);
