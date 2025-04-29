@@ -11,8 +11,6 @@ function Homepage( {userId}) {
 
   const [restaurant, setRestaurant] = useState([]);
 
-  const foodPreferences = [AsyncStorage.getItem('selectedPreferences'),];
-
   const restaurants_more = [
     {
       id: 1,
@@ -58,21 +56,65 @@ function Homepage( {userId}) {
 
   useEffect(() => {
     async function fetchRestaurants() {
-      const { data } = await supabase.from("restaurant").select(`*`);
-      setRestaurant(data);
-    }
-  
-    fetchRestaurants(); // Fetch the data when the component mounts
-  }, []);
-  
+        try {
+            const isfilter = await AsyncStorage.getItem('isfilter');
+            const foodPreferences = JSON.parse(await AsyncStorage.getItem('selectedPreferences')) || [];
+            const AllergyInfo = JSON.parse(await AsyncStorage.getItem('selectedAllergies')) || [];
+            const CostRange = await AsyncStorage.getItem('selectedCostRange') || "";
+            const Spice = await AsyncStorage.getItem('selectedSpice') || "";
 
-  // Handle random restaurant selection
-  function handleRandom() {
-    if (restaurant.length === 0) return;
-   const randomIndex = Math.floor(Math.random() * restaurant.length);
+            
+
+            let query = supabase
+                .from('restaurant')
+                .select('*, category(*)');
+
+            if (isfilter === "true") {
+                if (Array.isArray(foodPreferences) &&foodPreferences.length > 0) {
+                    query = query.in('category.food_preference', foodPreferences);
+                    console.log("Filtering by foodPreferences:", foodPreferences);
+                }
+                if (Array.isArray(AllergyInfo) && AllergyInfo.length > 0) {
+                    query = query.in('category.allergy', AllergyInfo);
+                    console.log("Filtering by AllergyInfo:", AllergyInfo);
+                }
+                if (CostRange !== "") {
+                    query = query.eq('price', parseInt(CostRange, 10));
+                    console.log("Filtering by CostRange:", CostRange);
+                }
+                if (Spice !== "") {
+                    query = query.eq('spice_level', parseInt(Spice, 10));
+                    console.log("Filtering by Spice:", Spice);
+                }
+            }
+
+            const { data, error } = await query;
+
+            if (error) {
+                console.error('Error fetching restaurants:', error);
+            } else {
+                setRestaurant(data || []);
+            }
+        } catch (error) {
+            console.error('Error in fetchRestaurants:', error);
+        }
+    }
+
+    fetchRestaurants();
+}, []);
+  
+  
+  async function handleRandom() {
+    if (!restaurant || restaurant.length === 0) {
+        console.error("No restaurants available for random selection.");
+        return;
+    }
+    const randomIndex = Math.floor(Math.random() * restaurant.length);
     setRandom(true);
-    setIsRandom(randomIndex);
+    setIsRandom(restaurant[randomIndex]);
   }
+  
+  
 
   function formatTime(timeString) {
     if (!timeString) return "N/A";
@@ -161,23 +203,22 @@ function Homepage( {userId}) {
 
       {random && israndom !== undefined ? (
         <Card
-          key={restaurant[israndom].restaurant_id}
-          name={restaurant[israndom].restaurant_name}
-          location={restaurant[israndom].location}
-          rating={restaurant[israndom].rating}
-          price={restaurant[israndom].price}
-          spiceLevel={restaurant[israndom].spice_level}
-          restaurantId={restaurant[israndom].restaurant_id}
+          key={israndom.restaurant_id}
+          name={israndom.restaurant_name}
+          location={israndom.location}
+          rating={israndom.rating}
+          price={israndom.price}
+          spiceLevel={israndom.spice_level}
+          restaurantId={israndom.restaurant_id}
           image={
             restaurants_more.find(
-              (item) => item.id === restaurant[israndom].restaurant_id
+              (item) => item.id === israndom.restaurant_id
             )?.image || require("../image/burger_restuarant.jpg")
           }
-          // category={restaurant[israndom].category}
-          openDay={restaurant[israndom].open_day}
-          openTime={formatTime(restaurant[israndom].open_time)}
-          closeTime={formatTime(restaurant[israndom].close_time)}
-          locationLink={restaurant[israndom].location_link}
+          openDay={israndom.open_day}
+          openTime={formatTime(israndom.open_time)}
+          closeTime={formatTime(israndom.close_time)}
+          locationLink={israndom.location_link}
           userId={userId}
         />
       ) : (
@@ -195,7 +236,6 @@ function Homepage( {userId}) {
                 (item) => item.id === restaurant.restaurant_id
               )?.image || require("../image/burger_restuarant.jpg")
             }
-            // category={restaurant.category.food_preference}
             openDay={restaurant.open_day}
             openTime={formatTime(restaurant.open_time)}
             closeTime={formatTime(restaurant.close_time)}

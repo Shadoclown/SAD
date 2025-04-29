@@ -30,7 +30,6 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, image, 
                 setCategory(cate);
             }
         }
-        console.log(category);
 
         fetchMenu();
     }, []);

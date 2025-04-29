@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
 import React, { useState } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from './connect';
@@ -44,76 +44,42 @@ function Filter({ closeFilter }) {
     ];
 
     // Toggle Functions
-    const togglePreference = (id) => {
+    const togglePreference = (name) => {
         setSelectedPreferences((prev) =>
-            prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+            prev.includes(name) ? prev.filter((item) => item !== name) : [...prev, name]
         );
     };
 
-    const toggleAllergy = (id) => {
+    const toggleAllergy = (name) => {
         setSelectedAllergies((prev) =>
-            prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+            prev.includes(name) ? prev.filter((item) => item !== name) : [...prev, name]
         );
     };
 
     const toggleCostRange = (id) => {
         setSelectedCostRange((prev) => (prev === id ? null : id));
-    };
+    };    
 
-    const toggleSpice = (id) => {
-        setSelectedSpice((prev) => (prev === id ? null : id));
+    const toggleSpice = (name) => {
+        setSelectedSpice((prev) => (prev === name ? null : name));
     };
 
     async function handleSetFilter() {
-        const selectedPrefNames = foodPreferences
-            .filter(pref => selectedPreferences.includes(pref.id))
-            .map(pref => pref.name);
+        if (selectedPreferences.length === 0 && selectedAllergies.length === 0 && selectedCostRange === null && selectedSpice === null) {
+            closeFilter();
+            Alert.alert("Error", "No filter is selected.");
 
-        const selectedAllergyNames = AllergyInfo
-            .filter(allergy => selectedAllergies.includes(allergy.id))
-            .map(allergy => allergy.name);
-
-        try {
-            // Fetch all restaurants
-            const { data: restaurants, error } = await supabase.from("restaurant").select("*");
-
-            if (error) {
-                console.error("Error fetching restaurants:", error.message);
-                closeFilter(null);
-                return;
-            }
-
-            // Filter restaurants that match at least one filter criterion
-            const filteredRestaurants = restaurants.filter(restaurant => {
-                const matchesPreferences = selectedPrefNames.some(pref =>
-                    restaurant.food_preference?.toLowerCase().includes(pref.toLowerCase())
-                );
-                const matchesAllergies = selectedAllergyNames.every(allergy =>
-                    !restaurant.allergy?.toLowerCase().includes(allergy.toLowerCase())
-                );
-                const matchesCostRange = selectedCostRange
-                    ? restaurant.cost_range === CostRange.find(range => range.id === selectedCostRange)?.name
-                    : true;
-                const matchesSpice = selectedSpice
-                    ? restaurant.spice_level === selectedSpice
-                    : true;
-
-                return matchesPreferences && matchesAllergies && matchesCostRange && matchesSpice;
-            });
-
-            if (filteredRestaurants.length > 0) {
-                // Randomly select a restaurant from the filtered list
-                const randomRestaurant = filteredRestaurants[Math.floor(Math.random() * filteredRestaurants.length)];
-                console.log("Randomly Selected Restaurant:", randomRestaurant);
-                closeFilter(randomRestaurant);
-            } else {
-                console.log("No restaurants match the selected filters.");
-                closeFilter(null);
-            }
-        } catch (err) {
-            console.error("Unexpected error:", err);
-            closeFilter(null);
+        } else {
+            Storage();
+            closeFilter();
         }
+    }
+
+    async function Storage() {
+        await AsyncStorage.setItem('selectedPreferences', JSON.stringify(selectedPreferences.length > 0 ? selectedPreferences : []));
+        await AsyncStorage.setItem('selectedAllergies', JSON.stringify(selectedAllergies.length > 0 ? selectedAllergies : []));
+        await AsyncStorage.setItem('selectedCostRange', selectedCostRange ? JSON.stringify(selectedCostRange) : '');
+        await AsyncStorage.setItem('selectedSpice', selectedSpice ? JSON.stringify(selectedSpice) : '');
     }
 
     return (
@@ -127,9 +93,9 @@ function Filter({ closeFilter }) {
                             key={item.id}
                             style={[
                                 styles.food_preference_item,
-                                selectedPreferences.includes(item.id) && styles.colorfoodPreference,
+                                selectedPreferences.includes(item.name) && styles.colorfoodPreference,
                             ]}
-                            onPress={() => togglePreference(item.id)}
+                            onPress={() => togglePreference(item.name)}
                         >
                             <Text style={styles.food_preference_text}>{item.name}</Text>
                         </TouchableOpacity>
@@ -148,9 +114,9 @@ function Filter({ closeFilter }) {
                             key={item.id}
                             style={[
                                 styles.food_preference_item,
-                                selectedAllergies.includes(item.id) && styles.colorfoodPreference,
+                                selectedAllergies.includes(item.name) && styles.colorfoodPreference,
                             ]}
-                            onPress={() => toggleAllergy(item.id)}
+                            onPress={() => toggleAllergy(item.name)}
                         >
                             <Text style={styles.food_preference_text}>{item.name}</Text>
                         </TouchableOpacity>
@@ -169,7 +135,7 @@ function Filter({ closeFilter }) {
                             key={item.id}
                             style={[
                                 styles.food_preference_item,
-                                selectedCostRange === item.id && styles.colorfoodPreference,
+                                selectedCostRange === item.name && styles.colorfoodPreference,
                             ]}
                             onPress={() => toggleCostRange(item.id)}
                         >
@@ -191,9 +157,9 @@ function Filter({ closeFilter }) {
                             key={level.id}
                             style={[
                                 styles.food_preference_item,
-                                selectedSpice === level.id && styles.colorfoodPreference,
+                                selectedSpice === level.name && styles.colorfoodPreference,
                             ]}
-                            onPress={() => toggleSpice(level.id)}
+                            onPress={() => toggleSpice(level.name)}
                         >
                             <Text style={styles.food_preference_text}>{level.name}</Text>
                         </TouchableOpacity>

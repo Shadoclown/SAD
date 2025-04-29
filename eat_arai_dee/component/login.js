@@ -6,27 +6,30 @@ import { supabase } from './connect';
 function Login({ closeLogin, gotoSignup }) {
     const [Username, setUsername] = useState('');
     const [Password, setPassword] = useState('');
+    const [islogin, setislogin] = useState(false);
 
     async function checkLogin() {
         if (!Username || !Password) {
             Alert.alert("Error", "Please enter username and password.");
             return;
         } else {
-            const { data, error } = await supabase
+            if (setislogin) {
+                const { data, error } = await supabase
                 .from("user")
                 .select("user_id,username, password")
                 .eq('username', Username)
                 .single();
     
-            if (error) {
-                Alert.alert("Error", "Error fetching data from Supabase: " + error.message);
-            } else {
-                if (data && data.password === Password) {
-                    await AsyncStorage.setItem('userId', data.user_id.toString());
-                    Alert.alert("Success", "Login successful!");
-                    closeLogin();
+                if (error) {
+                    Alert.alert("Error", "Error fetching data from Supabase: " + error.message);
                 } else {
-                    Alert.alert("Error", "Invalid username or password.");
+                    if (data && data.password === Password) {
+                        await AsyncStorage.setItem('userId', data.user_id.toString());
+                        Alert.alert("Success", "Login successful!");
+                        closeLogin();
+                    } else {
+                        Alert.alert("Error", "Invalid username or password.");
+                    }
                 }
             }
         }
@@ -73,7 +76,7 @@ function Login({ closeLogin, gotoSignup }) {
                 <Text style={styles.forgot}>Forgot Password</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button} onPress={checkLogin}>
+            <TouchableOpacity style={styles.button} onPress={() => { checkLogin(); setislogin(true); }}>
                 <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
 
