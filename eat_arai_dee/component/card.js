@@ -3,36 +3,27 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from './connect';
 import { userId } from './login';
 
-function Card({ name, location, rating, price, spiceLevel, restaurantId, image, openDay, openTime, closeTime, locationLink, userId }) {
+// Accept foodPreference as a prop instead of fetching category internally
+function Card({ name, location, rating, price, spiceLevel, restaurantId, image, openDay, openTime, closeTime, locationLink, userId, foodPreference }) {
     const [ViewMore, setViewMore] = useState(false);
     const [ViewDetail, setViewDetail] = useState("detail");
     const [isLogin, setisLogin]  = useState(false);
     const [Menu, setMenu] = useState([]);
-    const [category, setCategory] = useState([]);
 
     useEffect(() => {
+        // Fetch only menu data, category data is passed via props
         async function fetchMenu() {
-            const { data, error } = await supabase.from("menu").select("*");
-            const { data: cate, error: categoryError } = await supabase
-                .from("category")
-                .select("*")
-                .eq("restaurant_id", restaurantId);
+            const { data, error } = await supabase.from("menu").select("*").eq("restaurant_id", restaurantId);
 
             if (error) {
                 console.error("Error fetching menu:", error.message);
             } else {
-                setMenu(data);
-            }
-
-            if (categoryError) {
-                console.error("Error fetching category:", categoryError.message);
-            } else {
-                setCategory(cate);
+                setMenu(data || []); // Ensure Menu is an array
             }
         }
 
         fetchMenu();
-    }, []);
+    }, [restaurantId]);
 
     useEffect(() => {
         if (userId != null) {
@@ -55,7 +46,6 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, image, 
         } else {
             const { data, error } = await supabase.from("history").insert([
                 {
-                    // time: currentTimeData,
                     user_id: parseInt(userId),
                     restaurant_id: restaurantId,
                 },
@@ -104,24 +94,15 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, image, 
 
                 <View style={styles.card_category}>
                     <View style={styles.category}>
-                        {category && category.length > 0 ? (
-                            category
-                                .filter((item) => item.restaurant_id === restaurantId) // Filter by restaurant ID
-                                .flatMap((item) => {
-                                    try {
-                                        return item.food_preference; // Parse the food_preference JSON string
-                                    } catch (error) {
-                                        console.error("Invalid JSON in food_preference:", item.food_preference, error);
-                                        return []; // Return an empty array if parsing fails
-                                    }
-                                })
-                                .map((preference, index) => (
-                                    <Text key={`preference-${index}`} style={styles.category_item}>
-                                        {preference}
-                                    </Text>
-                                ))
+                        {/* Use the foodPreference prop directly */}
+                        {foodPreference && foodPreference.length > 0 ? (
+                            foodPreference.map((preference, index) => (
+                                <Text key={`preference-${index}`} style={styles.category_item}>
+                                    {preference}
+                                </Text>
+                            ))
                         ) : (
-                            <Text style={styles.additional_text}>No categories available</Text>
+                            <Text style={styles.additional_text}>No preferences listed</Text>
                         )}
                     </View>
                 </View>
@@ -132,9 +113,11 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, image, 
                         {ViewDetail === "menu" ? (
                             <>
                                 <Text style={styles.menu_text}>Recommended Menu</Text>
-                                {Menu.filter((item) => item.restaurant_id === restaurantId)
-                                    .map((item) => (
+                                {/* Ensure Menu is an array before mapping */}
+                                {Array.isArray(Menu) && Menu.length > 0 ? (
+                                    Menu.map((item) => (
                                         <View key={item.menu_id} style={styles.menu_item}>
+                                            {/* Placeholder image, replace with actual if available */}
                                             <Image
                                                 source={{ uri: 'https://via.placeholder.com/50' }}
                                                 style={styles.menu_item_image}
@@ -144,7 +127,10 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, image, 
                                                 <Text style={styles.menu_item_price}>฿{item.price}</Text>
                                             </View>
                                         </View>
-                                    ))}
+                                    ))
+                                ) : (
+                                    <Text>No menu items available.</Text>
+                                )}
                             </>
                         ) : (
                             <View>

@@ -200,6 +200,7 @@ function Homepage({ userId, filter_preferences, filter_allergies, filter_costRan
           openTime={formatTime(israndom.open_time)}
           closeTime={formatTime(israndom.close_time)}
           locationLink={israndom.location_link}
+          foodPreference={israndom.food_preference}
           userId={userId}
         />
       ) : (
@@ -221,6 +222,7 @@ function Homepage({ userId, filter_preferences, filter_allergies, filter_costRan
             openTime={formatTime(restaurant.open_time)}
             closeTime={formatTime(restaurant.close_time)}
             locationLink={restaurant.location_link}
+            foodPreference={restaurant.food_preference}
             userId={userId}
           />
         ))

@@ -1,31 +1,27 @@
 export function applyFilters(query, filters) {
-    // Food preferences
+    // Food preferences - match any preference
     if (filters.preferences && filters.preferences.length > 0) {
-      const foodPreferenceFilters = filters.preferences
-        .map(pref => `food_preference.like.%${pref}%`)
-        .join(',');
-      query = query.or(foodPreferenceFilters);
-      console.log("Food Preference Filters:", foodPreferenceFilters);
+        query = query.contains('food_preference', filters.preferences);
+        console.log("Food preferences filter applied:", filters.preferences);
     }
-  
-    // Allergies (include matches)
+
+    // Allergies - exclude if any allergy matches
     if (filters.allergies && filters.allergies.length > 0) {
-      const allergyFilters = filters.allergies
-        .map(allergy => `allergy.like.%${allergy}%`)
-        .join(',');
-      query = query.or(allergyFilters);
+        query = query.contains('allergy', filters.allergies);
+        console.log("Food preferences filter applied:", filters.preferences);
     }
-  
+
     // Cost range
     if (filters.costRange !== null && filters.costRange !== undefined) {
-      query = query.eq('price', filters.costRange);
+        query = query.eq('price', filters.costRange);
+        console.log("Food preferences filter applied:", filters.preferences);
     }
-  
+
     // Spice level
     if (filters.spiceLevel !== null && filters.spiceLevel !== undefined) {
-      query = query.eq('spice_level', filters.spiceLevel);
+        query = query.eq('spice_level', filters.spiceLevel);
+        console.log("Food preferences filter applied:", filters.preferences);
     }
-  
+
     return query;
-  }
-  
+}
