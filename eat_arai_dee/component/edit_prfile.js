@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as ImagePicker from 'expo-image-picker'; // Use expo-image-picker if using Expo
+import * as ImagePicker from 'expo-image-picker';
 import { supabase } from './connect';
 
 function EditProfile({ closeEditProfile }) {
@@ -12,7 +12,7 @@ function EditProfile({ closeEditProfile }) {
     const [username, setUsername] = useState(null);
     const [email, setEmail] = useState(null);
     const [password, setPassword] = useState(null);
-    const [profileImage, setProfileImage] = useState(null); // State for profile image
+    const [profileImage, setProfileImage] = useState(null);
 
     useEffect(() => {
         const checkLoginStatus = async () => {
@@ -42,9 +42,13 @@ function EditProfile({ closeEditProfile }) {
         };
 
         const loadProfileImage = async () => {
-            const savedImage = await AsyncStorage.getItem('profileImage');
-            if (savedImage) {
-                setProfileImage(savedImage);
+            try {
+                const savedImageUri = await AsyncStorage.getItem('profileImage');
+                if (savedImageUri) {
+                    setProfileImage(savedImageUri);
+                }
+            } catch (error) {
+                console.error('Error loading profile image:', error);
             }
         };
 
@@ -53,7 +57,37 @@ function EditProfile({ closeEditProfile }) {
         loadProfileImage();
     }, [userId]);
 
-    const changeProfileImage = async () => {
+    async function updateProfile() {
+        if (Newusername) {
+            const { data, error } = await supabase
+                .from('user')
+                .update({ username: Newusername })
+                .eq('user_id', parseInt(userId, 10));
+            if (error) {
+                console.error('Error updating username:', error.message);
+            }
+        }
+        if (Newemail) {
+            const { data, error } = await supabase
+                .from('user')
+                .update({ email: Newemail })
+                .eq('user_id', parseInt(userId, 10));
+            if (error) {
+                console.error('Error updating email:', error.message);
+            }
+        }
+        if (Newpassword) {
+            const { data, error } = await supabase
+                .from('user')
+                .update({ password: Newpassword })
+                .eq('user_id', parseInt(userId, 10));
+            if (error) {
+                console.error('Error updating password:', error.message);
+            }
+        }
+    }
+
+    const handleImagePicker = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (!permissionResult.granted) {
             alert('Permission to access the gallery is required!');
@@ -68,9 +102,15 @@ function EditProfile({ closeEditProfile }) {
         });
 
         if (!result.canceled) {
-            const imageUri = result.assets[0].uri; // Get the selected image URI
-            setProfileImage(imageUri); // Update state
-            await AsyncStorage.setItem('profileImage', imageUri); // Save to AsyncStorage
+            const imageUri = result.assets[0].uri;
+            console.log('Selected Image URI:', imageUri);
+
+            try {
+                await AsyncStorage.setItem('profileImage', imageUri);
+                setProfileImage(imageUri);
+            } catch (error) {
+                console.error('Error saving profile image:', error);
+            }
         }
     };
 
@@ -81,7 +121,7 @@ function EditProfile({ closeEditProfile }) {
                     source={profileImage ? { uri: profileImage } : require('../image/profile_image.png')}
                     style={styles.profile_image}
                 />
-                <TouchableOpacity style={styles.edit_image_button} onPress={changeProfileImage}>
+                <TouchableOpacity style={styles.edit_image_button} onPress={handleImagePicker}>
                     <Text style={styles.edit_image_text}>Change Profile</Text>
                 </TouchableOpacity>     
             </View>
@@ -156,6 +196,12 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         color: 'white',
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20,
+        textAlign: 'center',
     },
     label: {
         fontSize: 16,

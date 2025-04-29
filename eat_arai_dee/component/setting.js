@@ -6,6 +6,7 @@ import { supabase } from './connect';
 function Setting( {closeSetting, logout, gotoEdit, gotoHistory} ) {
     const [userId, setUserId] = useState(null);
     const [username, setUsername] = useState(null);
+    const [profileImage, setProfileImage] = useState(null);
     useEffect(() => {
         const checkLoginStatus = async () => {
             const storedUserId = await AsyncStorage.getItem('userId');
@@ -30,7 +31,18 @@ function Setting( {closeSetting, logout, gotoEdit, gotoHistory} ) {
                 setUserId(null);
             }
         };
+        const loadProfileImage = async () => {
+            try {
+                const savedImageUri = await AsyncStorage.getItem('profileImage');
+                if (savedImageUri) {
+                    setProfileImage(savedImageUri); // Load the saved image URI into state
+                }
+            } catch (error) {
+                console.error('Error loading profile image:', error);
+            }
+        };
 
+        loadProfileImage();
         checkLoginStatus();
     }, []);
 
@@ -42,7 +54,7 @@ function Setting( {closeSetting, logout, gotoEdit, gotoHistory} ) {
         <View style={styles.container}>
             <View style={styles.user_profile}>
                 <Image 
-                    source={require('../image/profile_image.png')}
+                    source={profileImage ? { uri: profileImage } : require('../image/profile_image.png')}
                     style={styles.profile_image}
                 />
                 <Text style={styles.username}>{userId ? username:"Guest"}</Text>

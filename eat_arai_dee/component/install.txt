@@ -17,3 +17,4 @@ npx pod-install
 
 -- image --
 npm install expo-image-picker
+npm install -g expo-cli
