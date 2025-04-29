@@ -71,12 +71,12 @@ function Homepage( {userId}) {
 
             if (isfilter === "true") {
                 if (Array.isArray(foodPreferences) &&foodPreferences.length > 0) {
-                    query = query.in('category.food_preference', foodPreferences);
-                    console.log("Filtering by foodPreferences:", foodPreferences);
+                    query = query.contains('category.food_preference', foodPreferences);
+                    console.log("contains by foodPreferences:", foodPreferences);
                 }
                 if (Array.isArray(AllergyInfo) && AllergyInfo.length > 0) {
-                    query = query.in('category.allergy', AllergyInfo);
-                    console.log("Filtering by AllergyInfo:", AllergyInfo);
+                    query = query.contains('category.allergy', AllergyInfo);
+                    console.log("contains by AllergyInfo:", AllergyInfo);
                 }
                 if (CostRange !== "") {
                     query = query.eq('price', parseInt(CostRange, 10));

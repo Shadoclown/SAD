@@ -109,7 +109,7 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, image, 
                                 .filter((item) => item.restaurant_id === restaurantId) // Filter by restaurant ID
                                 .flatMap((item) => {
                                     try {
-                                        return JSON.parse(item.food_preference); // Parse the food_preference JSON string
+                                        return item.food_preference; // Parse the food_preference JSON string
                                     } catch (error) {
                                         console.error("Invalid JSON in food_preference:", item.food_preference, error);
                                         return []; // Return an empty array if parsing fails

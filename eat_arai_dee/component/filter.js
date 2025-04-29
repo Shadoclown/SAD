@@ -58,7 +58,7 @@ function Filter({ closeFilter }) {
 
     const toggleCostRange = (id) => {
         setSelectedCostRange((prev) => (prev === id ? null : id));
-    };    
+    };
 
     const toggleSpice = (name) => {
         setSelectedSpice((prev) => (prev === name ? null : name));
@@ -67,10 +67,12 @@ function Filter({ closeFilter }) {
     async function handleSetFilter() {
         if (selectedPreferences.length === 0 && selectedAllergies.length === 0 && selectedCostRange === null && selectedSpice === null) {
             closeFilter();
+            await AsyncStorage.setItem('isfilter', 'false')
             Alert.alert("Error", "No filter is selected.");
 
         } else {
             Storage();
+            await AsyncStorage.setItem('isfilter', 'true')
             closeFilter();
         }
     }
@@ -135,7 +137,7 @@ function Filter({ closeFilter }) {
                             key={item.id}
                             style={[
                                 styles.food_preference_item,
-                                selectedCostRange === item.name && styles.colorfoodPreference,
+                                selectedCostRange === item.id && styles.colorfoodPreference,
                             ]}
                             onPress={() => toggleCostRange(item.id)}
                         >
