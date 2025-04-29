@@ -1,27 +1,29 @@
 export function applyFilters(query, filters) {
-    // Food preferences - match any preference
-    if (filters.preferences && filters.preferences.length > 0) {
-        query = query.contains('food_preference', filters.preferences);
-        console.log("Food preferences filter applied:", filters.preferences);
-    }
+  // Food preferences (match any — OR logic)
+  if (filters.preferences && filters.preferences.length > 0) {
+    const orConditions = filters.preferences
+      .map(pref => `food_preference.cs.${JSON.stringify([pref])}`)
+      .join(',');
+    query = query.or(orConditions);
+    console.log("Food preferences filter applied (OR):", filters.preferences);
+  }
 
-    // Allergies - exclude if any allergy matches
-    if (filters.allergies && filters.allergies.length > 0) {
-        query = query.contains('allergy', filters.allergies);
-        console.log("Food preferences filter applied:", filters.preferences);
-    }
+  // Allergies (match any — OR logic)
+  if (filters.allergies && filters.allergies.length > 0) {
+    const orConditions = filters.allergies
+      .map(allergy => `allergy.cs.${JSON.stringify([allergy])}`)
+      .join(',');
+    query = query.or(orConditions);
+    console.log("Allergies filter applied (OR):", filters.allergies);
+  }
 
-    // Cost range
-    if (filters.costRange !== null && filters.costRange !== undefined) {
-        query = query.eq('price', filters.costRange);
-        console.log("Food preferences filter applied:", filters.preferences);
-    }
+  if (filters.costRange !== null && filters.costRange !== undefined) {
+    query = query.eq('price', filters.costRange);
+  }
 
-    // Spice level
-    if (filters.spiceLevel !== null && filters.spiceLevel !== undefined) {
-        query = query.eq('spice_level', filters.spiceLevel);
-        console.log("Food preferences filter applied:", filters.preferences);
-    }
+  if (filters.spiceLevel !== null && filters.spiceLevel !== undefined) {
+    query = query.eq('spice_level', filters.spiceLevel);
+  }
 
-    return query;
+  return query;
 }

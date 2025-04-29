@@ -95,6 +95,7 @@ function Homepage({ userId, filter_preferences, filter_allergies, filter_costRan
     const randomIndex = Math.floor(Math.random() * restaurant.length);
     setRandom(true);
     setIsRandom(restaurant[randomIndex]);
+    console.log("Random restaurant selected:", restaurant[randomIndex]);
   }
 
   function formatTime(timeString) {
@@ -145,7 +146,7 @@ function Homepage({ userId, filter_preferences, filter_allergies, filter_costRan
         <Text style={styles.homepage_slogan}>Let us decide where to eat</Text>
       </View>
 
-      <View style={styles.individual_group_filter}>
+      {/* <View style={styles.individual_group_filter}>
         <TouchableOpacity
           style={[
             styles.individual_filter,
@@ -164,7 +165,7 @@ function Homepage({ userId, filter_preferences, filter_allergies, filter_costRan
         >
           <Text style={styles.filter_text}>Group</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       <View style={styles.homepage_random}>
         <TouchableOpacity onPress={() => handleRandom()}>
