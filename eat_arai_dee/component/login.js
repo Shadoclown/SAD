@@ -13,29 +13,38 @@ function Login({ closeLogin, gotoSignup, gotoFpass }) {
         if (!Username || !Password) {
             Alert.alert("Error", "Please enter username and password.");
             return;
-        } else {
-            if (setislogin) {
-                const { data, error } = await supabase
+        }
+
+        try {
+            const { data, error } = await supabase
                 .from("user")
-                .select("user_id,username, password")
+                .select("user_id, username, password")
                 .eq('username', Username)
                 .single();
-    
-                if (error) {
-                    Alert.alert("Error", "Error fetching data from Supabase: " + error.message);
-                } else {
-                    if (data && data.password === Password) {
+
+            console.log("Supabase response:", data, error);
+
+            if (error) {
+                Alert.alert("Error", "Error fetching data from Supabase: " + error.message);
+            } else {
+                if (data && data.password === Password) {
+                    if (data.user_id) {
                         await AsyncStorage.setItem('userId', data.user_id.toString());
+                        console.log("Stored userId:", data.user_id); // Log the stored userId
                         Alert.alert("Success", "Login successful!");
                         closeLogin();
                     } else {
-                        Alert.alert("Error", "Invalid username or password.");
+                        Alert.alert("Error", "User ID is missing.");
                     }
+                } else {
+                    Alert.alert("Error", "Invalid username or password.");
                 }
             }
+        } catch (error) {
+            console.error("Error in checkLogin:", error);
+            Alert.alert("Error", "An unexpected error occurred.");
         }
     }
-    
 
     return (
         <View style={styles.container}>
@@ -77,7 +86,7 @@ function Login({ closeLogin, gotoSignup, gotoFpass }) {
                 <Text style={styles.forgot}>Forgot Password</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button} onPress={() => { closeLogin(); setislogin(true); }}>
+            <TouchableOpacity style={styles.button} onPress={async () => { checkLogin(); setislogin(true); }}>
                 <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
 

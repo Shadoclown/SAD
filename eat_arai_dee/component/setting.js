@@ -3,23 +3,22 @@ import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from './connect';
 
-function Setting( {closeSetting, logout, gotoEdit, gotoHistory} ) {
-    const [userId, setUserId] = useState(null);
+function Setting({ closeSetting, logout, gotoEdit, gotoHistory, isLogin, userId }) {
     const [username, setUsername] = useState(null);
     const [profileImage, setProfileImage] = useState(null);
-    useEffect(() => {
-        const checkLoginStatus = async () => {
-            const storedUserId = await AsyncStorage.getItem('userId');
-            const parsedUserId = parseInt(storedUserId, 10);
 
-            if (!isNaN(parsedUserId)) {
-                setUserId(parsedUserId);
+    useEffect(() => {
+        console.log("Setting component mounted. User ID:", userId); // Log the userId
+        const checkLoginStatus = async () => {
+            if (userId) {
 
                 const { data, error } = await supabase
                     .from('user')
                     .select('username')
-                    .eq('user_id', parsedUserId)
+                    .eq('user_id', userId)
                     .single();
+
+                console.log("Supabase query result:", data, error);
 
                 if (error) {
                     console.error("Error fetching username:", error);
@@ -27,10 +26,10 @@ function Setting( {closeSetting, logout, gotoEdit, gotoHistory} ) {
                     setUsername(data.username);
                 }
             } else {
-                console.error("Invalid userId:", storedUserId);
-                setUserId(null);
+                setUsername(null);
             }
         };
+
         const loadProfileImage = async () => {
             try {
                 const savedImageUri = await AsyncStorage.getItem('profileImage');
@@ -44,20 +43,21 @@ function Setting( {closeSetting, logout, gotoEdit, gotoHistory} ) {
 
         loadProfileImage();
         checkLoginStatus();
-    }, []);
+    }, [isLogin, userId]); // Add userId as a dependency
 
-    function haddleLogout() {
-        AsyncStorage.removeItem('userId')
+    function handleLogout() {
+        AsyncStorage.removeItem('userId');
         logout();
     }
+
     return (
         <View style={styles.container}>
             <View style={styles.user_profile}>
-                <Image 
+                <Image
                     source={profileImage ? { uri: profileImage } : require('../image/profile_image.png')}
                     style={styles.profile_image}
                 />
-                <Text style={styles.username}>{userId ? username:"Guest"}</Text>
+                <Text style={styles.username}>{username || "Guest"}</Text>
             </View>
             <TouchableOpacity style={styles.info_button} onPress={gotoEdit}>
                 <Text style={styles.info_button_text}>Personal Information Setting</Text>
@@ -66,7 +66,7 @@ function Setting( {closeSetting, logout, gotoEdit, gotoHistory} ) {
                 <Text style={styles.info_button_text}>History</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.info_button, styles.logout_button]} onPress={haddleLogout}>
+            <TouchableOpacity style={[styles.info_button, styles.logout_button]} onPress={handleLogout}>
                 <Text style={styles.info_button_text}>Logout</Text>
             </TouchableOpacity>
 
@@ -77,8 +77,6 @@ function Setting( {closeSetting, logout, gotoEdit, gotoHistory} ) {
             </View>
         </View>
     );
-
-    
 }
 
 const styles = StyleSheet.create({
@@ -143,6 +141,5 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
 });
-
 
 export default Setting;

@@ -75,7 +75,7 @@ export default function App() {
       )}
       {isPageOpen === "Signup" && (
         <ScrollView contentContainerStyle={styles.scollContent}>
-          <Signup closeSignup={() => [setisPageOpen('Homepage'), setisLogin(true)]}
+          <Signup closeSignup={() => [setisPageOpen('Login'), setisLogin(true)]}
                   gotoLogin={() => setisPageOpen('Login')} />
         </ScrollView>
       )}
@@ -84,7 +84,10 @@ export default function App() {
           <Setting closeSetting={() => setisPageOpen('Homepage')}
                     logout={() => [setisPageOpen('Homepage'), setisLogin(false)]}
                     gotoEdit={() => setisPageOpen('EditProfile')}
-                    gotoHistory={() => setisPageOpen('History')}/>
+                    gotoHistory={() => setisPageOpen('History')}
+                    isLogin={isLogin}
+                    userId={UserId}
+          />
         </ScrollView>
       )}
       {isPageOpen === "Homepage" && (
