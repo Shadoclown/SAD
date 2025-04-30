@@ -55,7 +55,7 @@ function History({ closeHistory }) {
                 {historyData.map((item) => (
                     <View key={item.history_id} style={styles.historyItem}>
                         <View style={styles.row}>
-                            {/* Ensure item.restaurant exists before accessing its properties */}
+                            <Image source={{ uri: item.restaurant.image }} style={styles.image} />
                             {item.restaurant && (
                                 <View style={styles.details}>
                                     <Text style={styles.restaurantName}>{item.restaurant.restaurant_name}</Text>
