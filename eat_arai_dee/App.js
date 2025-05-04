@@ -15,6 +15,8 @@ import History from './component/history';
 import ForgetPass from './component/forgetpass';
 import OTP from './component/otp';
 import OrderPage from './component/orderpage';
+import Cart from './component/cart';
+import DeliveryPage from './component/deliverypage';
 
 const Stack = createNativeStackNavigator();
 
@@ -146,6 +148,8 @@ export default function App() {
         <Stack.Screen name="ForgetPass" component={ForgetPass} />
         <Stack.Screen name="OTP" component={OTP} />
         <Stack.Screen name="OrderPage" component={OrderPage} />
+        <Stack.Screen name="Cart" component={Cart} />
+        <Stack.Screen name="DeliveryPage" component={DeliveryPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );
