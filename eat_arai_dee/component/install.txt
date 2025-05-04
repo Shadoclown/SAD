@@ -1,20 +1,29 @@
--- suparabse --
+# Required Dependencies for Eat Arai Dee Project
+
+# Supabase
 npm install @supabase/supabase-js
 
--- asyncStorage --
+# Local storage
 npm install @react-native-async-storage/async-storage
 
--- timeZone --
-npm install date-fns-tz
+# For timezone handling
+npm install date-fns date-fns-tz
 
--- recat dom --
+## Navigation
 npm install react-router-dom
 
--- navigate --
+# React Navigation for mobile navigation
 npm install @react-navigation/native
-npm install @react-navigation/native react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-reanimated react-native-vector-icons
-npx pod-install
+npm install @react-navigation/stack @react-navigation/bottom-tabs @react-navigation/drawer
+npm install react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-reanimated 
 
--- image --
+# UI Components
+npm install react-native-vector-icons
+
+## Image Handling
 npm install expo-image-picker
+npm install expo-image
+
+## Development Tools
+# Only if needed for Expo CLI
 npm install -g expo-cli

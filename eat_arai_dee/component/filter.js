@@ -1,7 +1,7 @@
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-native";
 import React, { useState } from "react";
 
-function Filter({ closeFilter, setFilters }) {
+function Filter({ navigation, setFilters }) {
     const [filters, setLocalFilters] = useState({
         preferences: [],
         allergies: [],
@@ -57,102 +57,104 @@ function Filter({ closeFilter, setFilters }) {
 
     const handleSetFilter = () => {
         setFilters(filters);
-        closeFilter();
+        navigation.navigate('Homepage');
     };
 
     return (
-        <View style={styles.filter_container}>
-            {/* Food Preferences */}
-            <View style={styles.food_preference}>
-                <Text>Food Preferences</Text>
-                <View style={styles.preference_checkbox}>
-                    {foodPreferences.map(item => (
-                        <TouchableOpacity
-                            key={item.id}
-                            style={[
-                                styles.food_preference_item,
-                                filters.preferences.includes(item.name) && styles.colorfoodPreference,
-                            ]}
-                            onPress={() => toggleFilter('preferences', item.name)}
-                        >
-                            <Text style={styles.food_preference_text}>{item.name}</Text>
-                        </TouchableOpacity>
-                    ))}
+        <ScrollView>
+            <View style={styles.filter_container}>
+                {/* Food Preferences */}
+                <View style={styles.food_preference}>
+                    <Text>Food Preferences</Text>
+                    <View style={styles.preference_checkbox}>
+                        {foodPreferences.map(item => (
+                            <TouchableOpacity
+                                key={item.id}
+                                style={[
+                                    styles.food_preference_item,
+                                    filters.preferences.includes(item.name) && styles.colorfoodPreference,
+                                ]}
+                                onPress={() => toggleFilter('preferences', item.name)}
+                            >
+                                <Text style={styles.food_preference_text}>{item.name}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
                 </View>
+
+                <View style={styles.horizontal_line} />
+
+                {/* Allergy Info */}
+                <View style={styles.food_preference}>
+                    <Text>Allergy Information</Text>
+                    <View style={styles.preference_checkbox}>
+                        {AllergyInfo.map(item => (
+                            <TouchableOpacity
+                                key={item.id}
+                                style={[
+                                    styles.food_preference_item,
+                                    filters.allergies.includes(item.name) && styles.colorfoodPreference,
+                                ]}
+                                onPress={() => toggleFilter('allergies', item.name)}
+                            >
+                                <Text style={styles.food_preference_text}>{item.name}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </View>
+
+                <View style={styles.horizontal_line} />
+
+                {/* Cost Range */}
+                <View style={styles.food_preference}>
+                    <Text>Cost Range</Text>
+                    <View style={styles.preference_checkbox}>
+                        {CostRange.map(item => (
+                            <TouchableOpacity
+                                key={item.id}
+                                style={[
+                                    styles.food_preference_item,
+                                    filters.costRange === item.id && styles.colorfoodPreference,
+                                ]}
+                                onPress={() => toggleFilter('costRange', item.id)}
+                            >
+                                <Text style={styles.food_preference_text}>{item.name}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </View>
+
+                <View style={styles.horizontal_line} />
+
+                {/* Spice Level */}
+                <View style={styles.food_preference}>
+                    <Text>Spice Level</Text>
+                    <View style={[styles.preference_checkbox, { justifyContent: 'center', gap: 20 }]}>
+                        <Text style={{ fontSize: 12, marginTop: 10 }}>lowest</Text>
+                        {SpiceLevel.map(level => (
+                            <TouchableOpacity
+                                key={level.id}
+                                style={[
+                                    styles.food_preference_item,
+                                    filters.spiceLevel === level.name && styles.colorfoodPreference,
+                                ]}
+                                onPress={() => toggleFilter('spiceLevel', level.name)}
+                            >
+                                <Text style={styles.food_preference_text}>{level.name}</Text>
+                            </TouchableOpacity>
+                        ))}
+                        <Text style={{ fontSize: 12, marginTop: 10 }}>highest</Text>
+                    </View>
+                </View>
+
+                {/* Submit Button */}
+                <TouchableOpacity onPress={handleSetFilter}>
+                    <View style={styles.homepage_random}>
+                        <Text style={styles.random_button}>Set Filter</Text>
+                    </View>
+                </TouchableOpacity>
             </View>
-
-            <View style={styles.horizontal_line} />
-
-            {/* Allergy Info */}
-            <View style={styles.food_preference}>
-                <Text>Allergy Information</Text>
-                <View style={styles.preference_checkbox}>
-                    {AllergyInfo.map(item => (
-                        <TouchableOpacity
-                            key={item.id}
-                            style={[
-                                styles.food_preference_item,
-                                filters.allergies.includes(item.name) && styles.colorfoodPreference,
-                            ]}
-                            onPress={() => toggleFilter('allergies', item.name)}
-                        >
-                            <Text style={styles.food_preference_text}>{item.name}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
-            </View>
-
-            <View style={styles.horizontal_line} />
-
-            {/* Cost Range */}
-            <View style={styles.food_preference}>
-                <Text>Cost Range</Text>
-                <View style={styles.preference_checkbox}>
-                    {CostRange.map(item => (
-                        <TouchableOpacity
-                            key={item.id}
-                            style={[
-                                styles.food_preference_item,
-                                filters.costRange === item.id && styles.colorfoodPreference,
-                            ]}
-                            onPress={() => toggleFilter('costRange', item.id)}
-                        >
-                            <Text style={styles.food_preference_text}>{item.name}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
-            </View>
-
-            <View style={styles.horizontal_line} />
-
-            {/* Spice Level */}
-            <View style={styles.food_preference}>
-                <Text>Spice Level</Text>
-                <View style={[styles.preference_checkbox, { justifyContent: 'center', gap: 20 }]}>
-                    <Text style={{ fontSize: 12, marginTop: 10 }}>lowest</Text>
-                    {SpiceLevel.map(level => (
-                        <TouchableOpacity
-                            key={level.id}
-                            style={[
-                                styles.food_preference_item,
-                                filters.spiceLevel === level.name && styles.colorfoodPreference,
-                            ]}
-                            onPress={() => toggleFilter('spiceLevel', level.name)}
-                        >
-                            <Text style={styles.food_preference_text}>{level.name}</Text>
-                        </TouchableOpacity>
-                    ))}
-                    <Text style={{ fontSize: 12, marginTop: 10 }}>highest</Text>
-                </View>
-            </View>
-
-            {/* Submit Button */}
-            <TouchableOpacity onPress={handleSetFilter}>
-                <View style={styles.homepage_random}>
-                    <Text style={styles.random_button}>Set Filter</Text>
-                </View>
-            </TouchableOpacity>
-        </View>
+        </ScrollView>
     );
 }
 

@@ -1,17 +1,16 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from './connect';
 
-function Setting({ closeSetting, logout, gotoEdit, gotoHistory, isLogin, userId }) {
+function Setting({ navigation, logout, isLogin, userId }) {
     const [username, setUsername] = useState(null);
     const [profileImage, setProfileImage] = useState(null);
 
     useEffect(() => {
-        console.log("Setting component mounted. User ID:", userId); // Log the userId
+        console.log("Setting component mounted. User ID:", userId);
         const checkLoginStatus = async () => {
             if (userId) {
-
                 const { data, error } = await supabase
                     .from('user')
                     .select('username')
@@ -34,7 +33,7 @@ function Setting({ closeSetting, logout, gotoEdit, gotoHistory, isLogin, userId 
             try {
                 const savedImageUri = await AsyncStorage.getItem('profileImage');
                 if (savedImageUri) {
-                    setProfileImage(savedImageUri); // Load the saved image URI into state
+                    setProfileImage(savedImageUri);
                 }
             } catch (error) {
                 console.error('Error loading profile image:', error);
@@ -43,15 +42,10 @@ function Setting({ closeSetting, logout, gotoEdit, gotoHistory, isLogin, userId 
 
         loadProfileImage();
         checkLoginStatus();
-    }, [isLogin, userId]); // Add userId as a dependency
-
-    function handleLogout() {
-        AsyncStorage.removeItem('userId');
-        logout();
-    }
+    }, [isLogin, userId]);
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.user_profile}>
                 <Image
                     source={profileImage ? { uri: profileImage } : require('../image/profile_image.png')}
@@ -59,23 +53,32 @@ function Setting({ closeSetting, logout, gotoEdit, gotoHistory, isLogin, userId 
                 />
                 <Text style={styles.username}>{username || "Guest"}</Text>
             </View>
-            <TouchableOpacity style={styles.info_button} onPress={gotoEdit}>
+            <TouchableOpacity 
+                style={styles.info_button} 
+                onPress={() => navigation.navigate('EditProfile')}
+            >
                 <Text style={styles.info_button_text}>Personal Information Setting</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.info_button} onPress={gotoHistory}>
+            <TouchableOpacity 
+                style={styles.info_button} 
+                onPress={() => navigation.navigate('History')}
+            >
                 <Text style={styles.info_button_text}>History</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.info_button, styles.logout_button]} onPress={handleLogout}>
+            <TouchableOpacity style={[styles.info_button, styles.logout_button]} onPress={logout}>
                 <Text style={styles.info_button_text}>Logout</Text>
             </TouchableOpacity>
 
             <View style={styles.footer}>
-                <TouchableOpacity style={styles.close_button} onPress={closeSetting}>
+                <TouchableOpacity 
+                    style={styles.close_button} 
+                    onPress={() => navigation.navigate('Homepage')}
+                >
                     <Text style={styles.close_button_text}>Back</Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </ScrollView>
     );
 }
 

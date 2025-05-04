@@ -1,8 +1,8 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert, ScrollView } from 'react-native';
 import React, { useState } from 'react';
 import { supabase } from './connect';
 
-function Signup( {closeSignup, gotoLogin} ) {
+function Signup({ navigation }) {
     const [newUser, setnewUser] = useState('');
     const [newEmail, setnewEmail] = useState('');
     const [newPassword, setnewPassword] = useState('');
@@ -17,7 +17,7 @@ function Signup( {closeSignup, gotoLogin} ) {
             Alert.alert("Error", "Passwords do not match.");
         } else if (data.email == newEmail) {
             Alert.alert("Error", "Email already exists.");
-        }else {
+        } else {
             const { data, error } = await supabase
                 .from('user')
                 .insert([
@@ -33,13 +33,13 @@ function Signup( {closeSignup, gotoLogin} ) {
                 Alert.alert("Error", "Signup failed: " + error.message);
             } else {
                 Alert.alert("Success", "Account created successfully!");
-                closeSignup();
+                navigation.navigate('Login');
             }
         }
     }
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.tri_icon}>
                 <View style={styles.utensil_icon}>
                     <Image source={require('../image/utensil_icon.png')} style={styles.utensil_icon_image} />
@@ -91,11 +91,14 @@ function Signup( {closeSignup, gotoLogin} ) {
             </TouchableOpacity>
 
             <View style={styles.footer}>  
-                <TouchableOpacity style={styles.signup_button} onPress={gotoLogin}>
+                <TouchableOpacity 
+                    style={styles.signup_button} 
+                    onPress={() => navigation.navigate('Login')}
+                >
                     <Text style={styles.signup}>Already have account?  <Text style={{color: '#007BFF',}}>Login</Text></Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </ScrollView>
     );
 }
 

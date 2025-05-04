@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image, Alert, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { supabase } from './connect';
 
-function EditProfile({ closeEditProfile }) {
+function EditProfile({ navigation }) {
     const [userId, setUserId] = useState(null);
     const [Newusername, setNewUsername] = useState('');
     const [Newemail, setNewEmail] = useState('');
@@ -58,32 +58,61 @@ function EditProfile({ closeEditProfile }) {
     }, [userId]);
 
     async function updateProfile() {
-        if (Newusername) {
-            const { data, error } = await supabase
-                .from('user')
-                .update({ username: Newusername })
-                .eq('user_id', parseInt(userId, 10));
-            if (error) {
-                console.error('Error updating username:', error.message);
-            }
+        if (!userId) {
+            Alert.alert("Error", "User not logged in");
+            return;
         }
-        if (Newemail) {
-            const { data, error } = await supabase
-                .from('user')
-                .update({ email: Newemail })
-                .eq('user_id', parseInt(userId, 10));
-            if (error) {
-                console.error('Error updating email:', error.message);
+        
+        try {
+            let updated = false;
+            
+            if (Newusername) {
+                const { error } = await supabase
+                    .from('user')
+                    .update({ username: Newusername })
+                    .eq('user_id', parseInt(userId, 10));
+                    
+                if (error) {
+                    console.error('Error updating username:', error.message);
+                    Alert.alert("Error", "Failed to update username");
+                } else {
+                    updated = true;
+                }
             }
-        }
-        if (Newpassword) {
-            const { data, error } = await supabase
-                .from('user')
-                .update({ password: Newpassword })
-                .eq('user_id', parseInt(userId, 10));
-            if (error) {
-                console.error('Error updating password:', error.message);
+            
+            if (Newemail) {
+                const { error } = await supabase
+                    .from('user')
+                    .update({ email: Newemail })
+                    .eq('user_id', parseInt(userId, 10));
+                if (error) {
+                    console.error('Error updating email:', error.message);
+                    Alert.alert("Error", "Failed to update email");
+                } else {
+                    updated = true;
+                }
             }
+            
+            if (Newpassword) {
+                const { error } = await supabase
+                    .from('user')
+                    .update({ password: Newpassword })
+                    .eq('user_id', parseInt(userId, 10));
+                if (error) {
+                    console.error('Error updating password:', error.message);
+                    Alert.alert("Error", "Failed to update password");
+                } else {
+                    updated = true;
+                }
+            }
+            
+            if (updated) {
+                Alert.alert("Success", "Profile updated successfully");
+                navigation.navigate('Setting');
+            }
+        } catch (error) {
+            console.error("Error in updateProfile:", error);
+            Alert.alert("Error", "An unexpected error occurred");
         }
     }
 
@@ -115,7 +144,7 @@ function EditProfile({ closeEditProfile }) {
     };
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.user_profile}>
                 <Image 
                     source={profileImage ? { uri: profileImage } : require('../image/profile_image.png')}
@@ -154,14 +183,18 @@ function EditProfile({ closeEditProfile }) {
 
             <TouchableOpacity 
                 style={styles.saveButton} 
-                onPress={() => {
-                    updateProfile();
-                    closeEditProfile();
-                }}
+                onPress={updateProfile}
             >
                 <Text style={styles.saveButtonText}>Save</Text>
             </TouchableOpacity>
-        </View>
+            
+            <TouchableOpacity 
+                style={[styles.saveButton, { backgroundColor: '#ccc', marginTop: 10 }]} 
+                onPress={() => navigation.goBack()}
+            >
+                <Text style={styles.saveButtonText}>Cancel</Text>
+            </TouchableOpacity>
+        </ScrollView>
     );
 }
 

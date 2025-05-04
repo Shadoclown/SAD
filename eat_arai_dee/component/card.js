@@ -1,17 +1,17 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity, Linking, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { supabase } from './connect';
-import { userId } from './login';
+import { useNavigation } from '@react-navigation/native';
 
-// Accept foodPreference as a prop instead of fetching category internally
+// Accept foodPreference as a prop
 function Card({ name, location, rating, price, spiceLevel, restaurantId, restaurant_image, openDay, openTime, closeTime, locationLink, userId, foodPreference }) {
+    const navigation = useNavigation();
     const [ViewMore, setViewMore] = useState(false);
     const [ViewDetail, setViewDetail] = useState("detail");
     const [isLogin, setisLogin]  = useState(false);
     const [Menu, setMenu] = useState([]);
 
     useEffect(() => {
-        // Fetch only menu data, category data is passed via props
         async function fetchMenu() {
             const { data, error } = await supabase.from("menu").select("*").eq("restaurant_id", restaurantId);
 
@@ -52,6 +52,22 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, restaur
             ]);
         }
     }
+
+    const handleOrderNow = () => {
+        if (!isLogin) {
+            Alert.alert('Login Required', 'Please login to place an order.', [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Login', onPress: () => navigation.navigate('Login') }
+            ]);
+            return;
+        }
+        
+        navigation.navigate('OrderPage', {
+            restaurantId: restaurantId,
+            restaurantName: name,
+            restaurantImage: restaurant_image
+        });
+    };
 
     return (
         <View style={styles.card_container}>
@@ -94,7 +110,6 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, restaur
 
                 <View style={styles.card_category}>
                     <View style={styles.category}>
-                        {/* Use the foodPreference prop directly */}
                         {foodPreference && foodPreference.length > 0 ? (
                             foodPreference.map((preference, index) => (
                                 <Text key={`preference-${index}`} style={styles.category_item}>
@@ -113,7 +128,6 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, restaur
                         {ViewDetail === "menu" ? (
                             <>
                                 <Text style={styles.menu_text}>Recommended Menu</Text>
-                                {/* Ensure Menu is an array before mapping */}
                                 {Array.isArray(Menu) && Menu.length > 0 ? (
                                     Menu.map((menu, index) => (
                                         <View key={`${menu.menu_id}-${index}`} style={styles.menu_item}>
@@ -162,6 +176,13 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, restaur
                                 onPress={() => setViewDetail("menu")}
                             >
                                 <Text style={styles.menu_button_text}>Menu</Text>
+                            </TouchableOpacity>
+                            
+                            <TouchableOpacity
+                                style={styles.order_button}
+                                onPress={handleOrderNow}
+                            >
+                                <Text style={styles.order_button_text}>Order Now</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -397,6 +418,16 @@ const styles = StyleSheet.create({
     linkText: {
         color: 'blue',
         textDecorationLine: 'underline',
+    },
+    order_button: {
+        backgroundColor: "#ff5722",
+        padding: 10,
+        borderRadius: 5,
+    },
+    order_button_text: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });
 

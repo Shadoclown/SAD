@@ -1,21 +1,50 @@
-import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+// Import components
 import Homepage from './component/homepage';
 import Filter from './component/filter';
 import Login from './component/login';
 import Signup from './component/signup';
 import Setting from './component/setting';
 import EditProfile from './component/edit_prfile';
-import Histroy from './component/history';
+import History from './component/history';
 import ForgetPass from './component/forgetpass';
 import OTP from './component/otp';
+import OrderPage from './component/orderpage';
+
+const Stack = createNativeStackNavigator();
+
+// Custom header component
+function CustomHeader({ navigation, route, isLogin, setIsLogin, userId }) {
+  return (
+    <View style={styles.navbar}>
+      <View style={styles.navbar_logo}>
+        <Text style={styles.navbar_logo_E}> E </Text>
+        <Text style={styles.navbar_logo_text}>Eat Arai Dee</Text>
+      </View>
+      <View style={styles.navbar_icon}>
+        <TouchableOpacity onPress={() => navigation.navigate('Filter')}>
+          <Image
+            source={require('./image/filter.png')}
+            style={styles.navbar_icon_filter} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => (!isLogin ? navigation.navigate('Login') : navigation.navigate('Setting', { userId }))}>
+          <Image
+            source={require('./image/profile.png')}
+            style={styles.navbar_icon_profile} />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
 
 export default function App() {
-  const [isPageOpen, setisPageOpen] = useState("Homepage");
-  const [isLogin, setisLogin] = useState(false);
-  const [UserId, setUserId ] = useState(null);
-
+  const [isLogin, setIsLogin] = useState(false);
+  const [userId, setUserId] = useState(null);
   const [filters, setFilters] = useState({
     preferences: [],
     allergies: [],
@@ -25,124 +54,113 @@ export default function App() {
 
   useEffect(() => {
     const checkLoginStatus = async () => {
-      const userId = await AsyncStorage.getItem('userId');
-      if (userId) {
-        setUserId(userId);
-      } else {
-        setUserId(null);
+      try {
+        const storedUserId = await AsyncStorage.getItem('userId');
+        if (storedUserId) {
+          setUserId(storedUserId);
+          setIsLogin(true);
+        } else {
+          setUserId(null);
+          setIsLogin(false);
+        }
+      } catch (error) {
+        console.error('Error checking login status:', error);
       }
     };
+
     checkLoginStatus();
-  })
+  }, []);
 
   return (
-    <View style={styles.container}>
-      {/* Navbar */}
-      <View style={styles.navbar}>
-        <View style={styles.navbar_logo}>
-          <Text style={styles.navbar_logo_E}> E </Text>
-          <Text style={styles.navbar_logo_text}>Eat Arai Dee</Text>
-        </View>
-        <View style={styles.navbar_icon}>
-          <TouchableOpacity onPress={() => setisPageOpen("Filter")}>
-            <Image
-              source={require('./image/filter.png')}
-              style={styles.navbar_icon_filter} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => (!isLogin ? setisPageOpen("Login") : setisPageOpen("Setting"))}>
-            <Image
-              source={require('./image/profile.png')}
-              style={styles.navbar_icon_profile} />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {isPageOpen === "Filter" && (
-        <ScrollView contentContainerStyle={styles.scollContent}>
-            <Filter
-                closeFilter={() => setisPageOpen("Homepage")}
-                setFilters={setFilters}
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="Homepage"
+        screenOptions={{
+          header: (props) => (
+            <CustomHeader 
+              {...props} 
+              isLogin={isLogin} 
+              setIsLogin={setIsLogin} 
+              userId={userId} 
             />
-        </ScrollView>
-      )}
-      {isPageOpen === "Login" && (
-        <ScrollView contentContainerStyle={styles.scollContent}>
-          <Login closeLogin={() => [setisPageOpen('Homepage'), setisLogin(true)]}
-                  gotoSignup={() => setisPageOpen('Signup')} 
-                  gotoFpass={() => setisPageOpen('ForgetPass')}        
-          />
-        </ScrollView>
-      )}
-      {isPageOpen === "Signup" && (
-        <ScrollView contentContainerStyle={styles.scollContent}>
-          <Signup closeSignup={() => [setisPageOpen('Login'), setisLogin(true)]}
-                  gotoLogin={() => setisPageOpen('Login')} />
-        </ScrollView>
-      )}
-      {isPageOpen === "Setting" && (
-        <ScrollView contentContainerStyle={styles.scollContent}>
-          <Setting closeSetting={() => setisPageOpen('Homepage')}
-                    logout={() => [setisPageOpen('Homepage'), setisLogin(false)]}
-                    gotoEdit={() => setisPageOpen('EditProfile')}
-                    gotoHistory={() => setisPageOpen('History')}
-                    isLogin={isLogin}
-                    userId={UserId}
-          />
-        </ScrollView>
-      )}
-      {isPageOpen === "Homepage" && (
-        <ScrollView contentContainerStyle={styles.scollContent}>
+          ),
+        }}
+      >
+        <Stack.Screen name="Homepage">
+          {(props) => (
             <Homepage
-                userId={UserId}
-                filter_preferences={filters.preferences}
-                filter_allergies={filters.allergies}
-                filter_costRange={filters.costRange}
-                filter_spiceLevel={filters.spiceLevel}
+              {...props}
+              userId={userId}
+              filter_preferences={filters.preferences}
+              filter_allergies={filters.allergies}
+              filter_costRange={filters.costRange}
+              filter_spiceLevel={filters.spiceLevel}
             />
-        </ScrollView>
-      )}
-      {isPageOpen === "EditProfile" && (
-        <ScrollView contentContainerStyle={styles.scollContent}>
-          <EditProfile closeEditProfile={() => setisPageOpen('Homepage')}/>
-        </ScrollView> 
-      )}
-      {isPageOpen === "History" && (
-        <ScrollView contentContainerStyle={styles.scollContent}>
-          <Histroy  closeHistory={() => setisPageOpen('Setting')}/>
-        </ScrollView>
-      )}
-      {isPageOpen === "ForgetPass" && (
-        <ScrollView contentContainerStyle={styles.scollContent}>
-          <ForgetPass closeFpass={() => setisPageOpen('Login')}
-                      gotoLogin={() => setisPageOpen('Login')}
-                      gotocheckOTP={() => setisPageOpen('OTP')}/>
-        </ScrollView>
-      )}
-      {isPageOpen === "OTP" && (
-        <ScrollView contentContainerStyle={styles.scollContent}>
-          <OTP closeFpass={() => setisPageOpen('Login')}
-              gotoLogin={() => setisPageOpen('Login')}/>
-        </ScrollView>
-      )}
-
-
-    </View>
+          )}
+        </Stack.Screen>
+        
+        <Stack.Screen name="Filter">
+          {(props) => (
+            <Filter
+              {...props}
+              setFilters={setFilters}
+            />
+          )}
+        </Stack.Screen>
+        
+        <Stack.Screen name="Login">
+          {(props) => (
+            <Login
+              {...props}
+              setIsLogin={setIsLogin}
+              setUserId={setUserId}
+            />
+          )}
+        </Stack.Screen>
+        
+        <Stack.Screen name="Signup" component={Signup} />
+        
+        <Stack.Screen name="Setting">
+          {(props) => (
+            <Setting
+              {...props}
+              isLogin={isLogin}
+              userId={userId}
+              logout={() => {
+                AsyncStorage.removeItem('userId');
+                setIsLogin(false);
+                setUserId(null);
+                props.navigation.navigate('Homepage');
+              }}
+            />
+          )}
+        </Stack.Screen>
+        
+        <Stack.Screen name="EditProfile">
+          {(props) => (
+            <EditProfile {...props} />
+          )}
+        </Stack.Screen>
+        
+        <Stack.Screen name="History" component={History} />
+        <Stack.Screen name="ForgetPass" component={ForgetPass} />
+        <Stack.Screen name="OTP" component={OTP} />
+        <Stack.Screen name="OrderPage" component={OrderPage} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'rgb(223, 240, 255)',
-  },
   navbar: {
-    marginTop: 40,
     width: '100%',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
+    paddingTop: 40,
+    backgroundColor: 'rgb(223, 240, 255)',
   },
   navbar_logo: {
     flexDirection: 'row',
@@ -179,9 +197,4 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
   },
-  scollContent: {
-    flexGrow: 1,
-    paddingBottom: 20,
-  },
-
 });

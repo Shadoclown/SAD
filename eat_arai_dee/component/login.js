@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from './connect';
 
-
-function Login({ closeLogin, gotoSignup, gotoFpass }) {
+function Login({ navigation, setIsLogin, setUserId }) {
     const [Username, setUsername] = useState('');
     const [Password, setPassword] = useState('');
-    const [islogin, setislogin] = useState(false);
 
     async function checkLogin() {
         if (!Username || !Password) {
@@ -30,9 +28,11 @@ function Login({ closeLogin, gotoSignup, gotoFpass }) {
                 if (data && data.password === Password) {
                     if (data.user_id) {
                         await AsyncStorage.setItem('userId', data.user_id.toString());
-                        console.log("Stored userId:", data.user_id); // Log the stored userId
+                        console.log("Stored userId:", data.user_id);
+                        setUserId(data.user_id.toString());
+                        setIsLogin(true);
                         Alert.alert("Success", "Login successful!");
-                        closeLogin();
+                        navigation.navigate('Homepage');
                     } else {
                         Alert.alert("Error", "User ID is missing.");
                     }
@@ -47,7 +47,7 @@ function Login({ closeLogin, gotoSignup, gotoFpass }) {
     }
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.tri_icon}>
                 <View style={styles.utensil_icon}>
                     <Image source={require('../image/utensil_icon.png')} style={styles.utensil_icon_image} />
@@ -82,22 +82,28 @@ function Login({ closeLogin, gotoSignup, gotoFpass }) {
                 secureTextEntry
             />
 
-            <TouchableOpacity style={styles.forgot_button} onPress={() => gotoFpass()}>
+            <TouchableOpacity 
+                style={styles.forgot_button} 
+                onPress={() => navigation.navigate('ForgetPass')}
+            >
                 <Text style={styles.forgot}>Forgot Password</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button} onPress={async () => { checkLogin(); setislogin(true); }}>
+            <TouchableOpacity style={styles.button} onPress={checkLogin}>
                 <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
 
             <View style={styles.footer}>
-                <TouchableOpacity style={styles.signup_button} onPress={gotoSignup}>
+                <TouchableOpacity 
+                    style={styles.signup_button} 
+                    onPress={() => navigation.navigate('Signup')}
+                >
                     <Text style={styles.signup}>
                         Don't have an account? <Text style={{ color: '#007BFF' }}>Sign-up</Text>
                     </Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </ScrollView>
     );
 }
 

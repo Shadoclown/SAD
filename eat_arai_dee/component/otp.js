@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, Alert, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 
-function OTP({ gotoLogin, gotoFpass }) {
+function OTP({ navigation }) {
     const [formData, setFormData] = useState({
         otp: '',
         newPassword: '',
@@ -19,11 +19,11 @@ function OTP({ gotoLogin, gotoFpass }) {
         }
         // ...handle OTP verification and password reset logic...
         Alert.alert("Success", "Password reset successful!");
-        gotoLogin();
+        navigation.navigate('Login');
     };
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.title}>Change Password</Text>
             <Text style={styles.subtitle}>Enter OTP and New Password</Text>
             <TextInput
@@ -50,20 +50,18 @@ function OTP({ gotoLogin, gotoFpass }) {
             <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                 <Text style={styles.buttonText}>Next</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.backButton} onPress={gotoLogin}>
+            <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Login')}>
                 <Text style={styles.backButtonText}>Back to Login</Text>
             </TouchableOpacity>
-        </View>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
-        // backgroundColor: '#EAF6FF',
     },
     title: {
         fontSize: 28,

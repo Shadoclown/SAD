@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, Linking, A
 import { supabase } from "./connect";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-function History({ closeHistory }) {
+function History({ navigation }) {
     const [expandedItemId, setExpandedItemId] = useState(null);
     const [historyData, setHistoryData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -90,7 +90,10 @@ function History({ closeHistory }) {
                     </View>
                 ))}
             </ScrollView>
-            <TouchableOpacity style={styles.closeButton} onPress={closeHistory}>
+            <TouchableOpacity 
+                style={styles.closeButton} 
+                onPress={() => navigation.goBack()}
+            >
                 <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
         </View>

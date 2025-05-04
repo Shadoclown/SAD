@@ -1,12 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 
-const ForgetPass = ({ gotoLogin, gotocheckOTP }) => {
+const ForgetPass = ({ navigation }) => {
     const [Username, setUsername] = useState('');
 
+    const handleSendOTP = () => {
+        if (!Username) {
+            Alert.alert("Error", "Please enter your username or email");
+            return;
+        }
+        // Here you would typically call an API to send OTP
+        // For now, let's just navigate to the OTP screen
+        navigation.navigate('OTP');
+    };
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.title}>
                 <Text style={styles.title_text}>Find your account</Text>
                 <Text style={styles.sub_title_text}>Enter your email address or username and we will send you a OTP.</Text>
@@ -19,22 +28,24 @@ const ForgetPass = ({ gotoLogin, gotocheckOTP }) => {
                     placeholder="Enter your username"
                     autoCapitalize="none"
                     onChangeText={(text) => setUsername(text)}
+                    value={Username}
                 />
             </View>
-            <TouchableOpacity style={styles.button} onPress={gotocheckOTP} >
+            
+            <TouchableOpacity style={styles.button} onPress={handleSendOTP}>
                 <Text style={styles.buttonText}>Send</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity>
-                <Text style={styles.loginText} onPress={gotoLogin}>Back to Login</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                <Text style={styles.loginText}>Back to Login</Text>
             </TouchableOpacity>
-        </View>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flexGrow: 1,
     },
     title: {
         fontSize: 22,

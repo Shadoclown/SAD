@@ -1,24 +1,16 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
 import Card from "./card";
 import { supabase } from "./connect";
 import { applyFilters } from "./filterUtils";
 
-function Homepage({ userId, filter_preferences, filter_allergies, filter_costRange, filter_spiceLevel }) {
-  const [selectedFilter, setSelectedFilter] = useState("Individual");
+function Homepage({ navigation, userId, filter_preferences, filter_allergies, filter_costRange, filter_spiceLevel }) {
   const [random, setRandom] = useState(false);
   const [israndom, setIsRandom] = useState();
-
   const [restaurant, setRestaurant] = useState([]);
 
   useEffect(() => {
     async function fetchRestaurants() {
-      // console.log("Fetching restaurants with filters:", {
-      //   preferences: filter_preferences,
-      //   allergies: filter_allergies,
-      //   costRange: filter_costRange,
-      //   spiceLevel: filter_spiceLevel,
-      // });
       try {
         let query = supabase.from('restaurant_details_view').select('*');
         query = applyFilters(query, {
@@ -34,7 +26,6 @@ function Homepage({ userId, filter_preferences, filter_allergies, filter_costRan
           console.error('Error fetching restaurants:', error);
         } else {
           setRestaurant(data);
-          // console.log("Fetched data:", data);
         }
       } catch (error) {
         console.error('Error in fetchRestaurants:', error);
@@ -76,110 +67,91 @@ function Homepage({ userId, filter_preferences, filter_allergies, filter_costRan
   }
 
   return (
-    <View style={styles.homepage}>
-      <View style={styles.tri_icon}>
-        <View style={styles.utensil_icon}>
-          <Image
-            source={require("../image/utensil_icon.png")}
-            style={styles.utensil_icon_image}
-          />
+    <ScrollView>
+      <View style={styles.homepage}>
+        <View style={styles.tri_icon}>
+          <View style={styles.utensil_icon}>
+            <Image
+              source={require("../image/utensil_icon.png")}
+              style={styles.utensil_icon_image}
+            />
+          </View>
+          <View style={styles.chef_icon}>
+            <Image
+              source={require("../image/chef_icon.png")}
+              style={styles.chef_icon_image}
+            />
+          </View>
+          <View style={styles.location_icon}>
+            <Image
+              source={require("../image/location_icon.png")}
+              style={styles.location_icon_image}
+            />
+          </View>
         </View>
-        <View style={styles.chef_icon}>
-          <Image
-            source={require("../image/chef_icon.png")}
-            style={styles.chef_icon_image}
-          />
+
+        <View style={styles.name_slogan}>
+          <Text style={styles.homepage_name}>Eat Arai Dee</Text>
+          <Text style={styles.homepage_slogan}>Let us decide where to eat</Text>
         </View>
-        <View style={styles.location_icon}>
-          <Image
-            source={require("../image/location_icon.png")}
-            style={styles.location_icon_image}
-          />
+
+        <View style={styles.homepage_random}>
+          <TouchableOpacity onPress={() => handleRandom()}>
+            <Text style={styles.random_button}>Random Restaurant</Text>
+          </TouchableOpacity>
         </View>
+
+        {random == true ? (
+          <View style={styles.above_text}>
+            <Text style={styles.text_text}>Random Restaurant</Text>
+          </View>
+        ) : (
+          <View style={styles.above_text}>
+            <Text style={styles.text_text}>Recommended</Text>
+          </View>
+        )}
+
+        {random && israndom !== undefined ? (
+          <>
+            <Card
+              key={israndom.restaurant_id}
+              name={israndom.restaurant_name}
+              location={israndom.location}
+              rating={israndom.rating}
+              price={israndom.price}
+              spiceLevel={israndom.spice_level}
+              restaurantId={israndom.restaurant_id}
+              restaurant_image={israndom.image}
+              openDay={israndom.open_day}
+              openTime={formatTime(israndom.open_time)}
+              closeTime={formatTime(israndom.close_time)}
+              locationLink={israndom.location_link}
+              foodPreference={israndom.food_preference}
+              userId={userId}
+            />
+          </>
+        ) : (
+          shuffleRecommend().map((restaurant, index) => (
+            <Card
+              key={`${restaurant.restaurant_id}-${index}`} // Ensure a unique key
+              name={restaurant.restaurant_name}
+              location={restaurant.location}
+              rating={restaurant.rating}
+              price={restaurant.price}
+              spiceLevel={restaurant.spice_level}
+              restaurantId={restaurant.restaurant_id}
+              restaurant_image={restaurant.image}
+              openDay={restaurant.open_day}
+              openTime={formatTime(restaurant.open_time)}
+              closeTime={formatTime(restaurant.close_time)}
+              locationLink={restaurant.location_link}
+              foodPreference={restaurant.food_preference}
+              userId={userId}
+            />
+          ))
+        )}
       </View>
-
-      <View style={styles.name_slogan}>
-        <Text style={styles.homepage_name}>Eat Arai Dee</Text>
-        <Text style={styles.homepage_slogan}>Let us decide where to eat</Text>
-      </View>
-
-      {/* <View style={styles.individual_group_filter}>
-        <TouchableOpacity
-          style={[
-            styles.individual_filter,
-            selectedFilter === "Individual" && styles.selected_filter,
-          ]}
-          onPress={() => setSelectedFilter("Individual")}
-        >
-          <Text style={styles.filter_text}>Individual</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.group_filter,
-            selectedFilter === "Group" && styles.selected_filter,
-          ]}
-          onPress={() => setSelectedFilter("Group")}
-        >
-          <Text style={styles.filter_text}>Group</Text>
-        </TouchableOpacity>
-      </View> */}
-
-      <View style={styles.homepage_random}>
-        <TouchableOpacity onPress={() => handleRandom()}>
-          <Text style={styles.random_button}>Random Restaurant</Text>
-        </TouchableOpacity>
-      </View>
-
-      {random == true ? (
-        <View style={styles.above_text}>
-          <Text style={styles.text_text}>Random Restaurant</Text>
-        </View>
-      ) : (
-        <View style={styles.above_text}>
-          <Text style={styles.text_text}>Recommended</Text>
-        </View>
-      )}
-
-      {random && israndom !== undefined ? (
-        <>
-          <Card
-            key={israndom.restaurant_id}
-            name={israndom.restaurant_name}
-            location={israndom.location}
-            rating={israndom.rating}
-            price={israndom.price}
-            spiceLevel={israndom.spice_level}
-            restaurantId={israndom.restaurant_id}
-            restaurant_image={israndom.image}
-            openDay={israndom.open_day}
-            openTime={formatTime(israndom.open_time)}
-            closeTime={formatTime(israndom.close_time)}
-            locationLink={israndom.location_link}
-            foodPreference={israndom.food_preference}
-            userId={userId}
-          />
-        </>
-      ) : (
-        shuffleRecommend().map((restaurant, index) => (
-          <Card
-            key={`${restaurant.restaurant_id}-${index}`} // Ensure a unique key
-            name={restaurant.restaurant_name}
-            location={restaurant.location}
-            rating={restaurant.rating}
-            price={restaurant.price}
-            spiceLevel={restaurant.spice_level}
-            restaurantId={restaurant.restaurant_id}
-            restaurant_image={restaurant.image}
-            openDay={restaurant.open_day}
-            openTime={formatTime(restaurant.open_time)}
-            closeTime={formatTime(restaurant.close_time)}
-            locationLink={restaurant.location_link}
-            foodPreference={restaurant.food_preference}
-            userId={userId}
-          />
-        ))
-      )}
-    </View>
+    </ScrollView>
   );
 }
 
