@@ -63,8 +63,29 @@ const OrderPage = ({ route, navigation }) => {
   }, [restaurantId]);
 
   const addToCart = (item) => {
-    setCartItems([...cartItems, item]);
-    Alert.alert("Added to Cart", `${item.name || item.menu_name} added to your cart.`);
+    setCartItems(prevItems => {
+      // Check if item already exists in cart
+      const existingItem = prevItems.find(
+        cartItem => (cartItem.id || cartItem.menu_id) === (item.id || item.menu_id)
+      );
+
+      if (existingItem) {
+        // If item exists, increase its quantity
+        return prevItems.map(cartItem =>
+          (cartItem.id || cartItem.menu_id) === (item.id || item.menu_id)
+            ? { ...cartItem, quantity: (cartItem.quantity || 1) + 1 }
+            : cartItem
+        );
+      } else {
+        // If item doesn't exist, add it with quantity 1
+        return [...prevItems, { ...item, quantity: 1 }];
+      }
+    });
+
+    Alert.alert(
+      "Added to Cart", 
+      `${item.name || item.menu_name} added to your cart.`
+    );
   };
 
   const goToCart = () => {
@@ -73,10 +94,13 @@ const OrderPage = ({ route, navigation }) => {
       return;
     }
     
+    console.log("Navigating to cart with restaurant ID:", restaurantId);
+    
     // Navigate to Cart page with items
     navigation.navigate('Cart', { 
       cartItems,
-      restaurantName: restaurantName || 'Restaurant'
+      restaurantName: restaurantName || 'Restaurant',
+      restaurantId: restaurantId  // Ensure restaurantId is passed
     });
   };
 

@@ -50,6 +50,11 @@ function History({ navigation }) {
 
     return (
         <View style={styles.container}>
+            <View style={styles.headerBar}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Text style={styles.backButtonText}>← Back</Text>
+                </TouchableOpacity>
+            </View>
             <Text style={styles.title}>History</Text>
             <ScrollView>
                 {historyData.map((item) => (
@@ -104,6 +109,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
+    },
+    headerBar: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 10,
+        backgroundColor: '#ffffff',
     },
     title: {
         fontSize: 24,
@@ -176,6 +187,14 @@ const styles = StyleSheet.create({
     },
     locationText: {
         flexDirection: "row",
+    },
+    backButton: {
+        marginRight: 15,
+    },
+    backButtonText: {
+        fontSize: 16,
+        color: '#007BFF',
+        fontWeight: 'bold',
     },
 });
 

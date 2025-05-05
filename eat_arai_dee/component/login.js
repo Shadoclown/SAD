@@ -48,6 +48,11 @@ function Login({ navigation, setIsLogin, setUserId }) {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
+            <View style={styles.headerBar}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Text style={styles.backButtonText}>← Back</Text>
+                </TouchableOpacity>
+            </View>
             <View style={styles.tri_icon}>
                 <View style={styles.utensil_icon}>
                     <Image source={require('../image/utensil_icon.png')} style={styles.utensil_icon_image} />
@@ -112,6 +117,19 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         padding: 20,
+    },
+    headerBar: {
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    backButton: {
+        alignSelf: 'flex-start',
+    },
+    backButtonText: {
+        fontSize: 16,
+        color: '#007BFF',
     },
     tri_icon: {
         flexDirection: 'row',

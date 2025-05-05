@@ -37,22 +37,6 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, restaur
         Linking.openURL(locationLink);
     };
 
-    async function AddHistry() {
-        const now = new Date();
-        const currentTimeData = now.toISOString();
-        if (!userId) {
-            Alert.alert('Error', 'Please Login.');
-            return;
-        } else {
-            const { data, error } = await supabase.from("history").insert([
-                {
-                    user_id: parseInt(userId),
-                    restaurant_id: restaurantId,
-                },
-            ]);
-        }
-    }
-
     const handleOrderNow = () => {
         if (!isLogin) {
             Alert.alert('Login Required', 'Please login to place an order.', [
@@ -193,7 +177,6 @@ function Card({ name, location, rating, price, spiceLevel, restaurantId, restaur
                         style={styles.view_detail_button}
                         onPress={() => {
                             if (isLogin) {
-                                AddHistry();
                                 setViewMore(!ViewMore);
                                 setViewDetail("detail");
                             } else {

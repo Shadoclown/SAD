@@ -46,6 +46,11 @@ function Setting({ navigation, logout, isLogin, userId }) {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
+            <View style={styles.headerBar}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Text style={styles.backButtonText}>← Back</Text>
+                </TouchableOpacity>
+            </View>
             <View style={styles.user_profile}>
                 <Image
                     source={profileImage ? { uri: profileImage } : require('../image/profile_image.png')}
@@ -72,10 +77,10 @@ function Setting({ navigation, logout, isLogin, userId }) {
 
             <View style={styles.footer}>
                 <TouchableOpacity 
-                    style={styles.close_button} 
+                    style={styles.homeButton} 
                     onPress={() => navigation.navigate('Homepage')}
                 >
-                    <Text style={styles.close_button_text}>Back</Text>
+                    <Text style={styles.homeButtonText}>Back to Homepage</Text>
                 </TouchableOpacity>
             </View>
         </ScrollView>
@@ -86,6 +91,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
+    },
+    headerBar: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 10,
+        backgroundColor: '#ffffff',
     },
     user_profile: {
         flexDirection: 'row',
@@ -124,24 +135,36 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgb(255, 40, 40)',
     },
     footer: {
-        width: '50%',
+        width: '100%',
         alignItems: 'center',
         justifyContent: 'flex-end',
         flex: 1,
         marginBottom: 20,
     },
-    close_button: {
+    homeButton: {
         width: '80%',
-        height: 50,
-        backgroundColor: 'rgb(255, 40, 40)',
+        backgroundColor: '#007BFF',
+        padding: 15,
         borderRadius: 10,
-        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
     },
-    close_button_text: {
+    homeButtonText: {
         color: 'white',
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 'bold',
-        textAlign: 'center',
+    },
+    backButton: {
+        marginRight: 15,
+    },
+    backButtonText: {
+        fontSize: 16,
+        color: '#007BFF',
+        fontWeight: 'bold',
     },
 });
 

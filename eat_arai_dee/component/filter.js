@@ -62,6 +62,11 @@ function Filter({ navigation, setFilters }) {
 
     return (
         <ScrollView>
+            <View style={styles.headerBar}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Text style={styles.backButtonText}>← Back</Text>
+                </TouchableOpacity>
+            </View>
             <View style={styles.filter_container}>
                 {/* Food Preferences */}
                 <View style={styles.food_preference}>
@@ -201,6 +206,20 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 20,
         fontWeight: 'bold',
+    },
+    backButton: {
+        marginRight: 15,
+    },
+    backButtonText: {
+        fontSize: 16,
+        color: '#007BFF',
+        fontWeight: 'bold',
+    },
+    headerBar: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 10,
+        backgroundColor: '#ffffff',
     },
 });
 
