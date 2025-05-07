@@ -119,6 +119,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 10,
+        backgroundColor: '#f0f8ff',
     },
     backButton: {
         alignSelf: 'flex-start',

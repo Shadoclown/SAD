@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#f0f8ff',
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
   },
@@ -206,6 +206,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     marginRight: 15,
+    backgroundColor: '#f0f8ff',
   },
   backButtonText: {
     fontSize: 16,

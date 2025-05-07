@@ -301,6 +301,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
+    backgroundColor: '#f0f8ff',
   },
   backButton: {
     marginRight: 15,
