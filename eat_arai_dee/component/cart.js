@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, ScrollView, StyleSheet, Alert } from 'react-native';
+import { supabase } from './connect';
+import * as Location from 'expo-location';
 
 const Cart = ({ navigation, route }) => {
   const { cartItems: initialCartItems = [], restaurantId } = route.params || {};
@@ -52,15 +54,50 @@ const Cart = ({ navigation, route }) => {
     }, 0);
   };
   
-  const handleConfirmOrder = () => {
-    console.log('Order confirmed!', { orderItems, specialInstructions, total: calculateTotal(), restaurantId });
-    
-    navigation.navigate('DeliveryPage', {
-      orderItems, 
-      total: calculateTotal(),
-      specialInstructions,
-      restaurantId: restaurantId
-    });
+  const handleConfirmOrder = async () => {
+    try {
+      // Get user location first
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission denied', 'Location permission is required');
+        return;
+      }
+
+      // Get user's current location
+      let userLocation = await Location.getCurrentPositionAsync({});
+      console.log('User Location:', {
+        latitude: userLocation.coords.latitude,
+        longitude: userLocation.coords.longitude
+      });
+
+      // Fetch restaurant location
+      const { data, error } = await supabase
+        .from('restaurant')
+        .select('location_link')
+        .eq('restaurant_id', restaurantId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching location:', error);
+        return;
+      }
+
+      console.log('Restaurant location link:', data.location_link);
+
+      // Navigate with both locations
+      navigation.navigate('DeliveryPage', {
+        orderItems,
+        total: calculateTotal(),
+        specialInstructions,
+        restaurantId,
+        locationLink: data.location_link,
+        Userlatitude: userLocation.coords.latitude,
+        Userlongitude: userLocation.coords.longitude
+      });
+    } catch (error) {
+      console.error('Error in handleConfirmOrder:', error);
+      Alert.alert('Error', 'Unable to process your order. Please try again.');
+    }
   };
 
   return (

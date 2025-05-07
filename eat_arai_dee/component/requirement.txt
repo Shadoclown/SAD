@@ -2,7 +2,7 @@
 
 2. There is only one role: user. There is no need for the rider’s version of the app. ✅
 
-3. The mock data should contain at least 10 restaurants and 10 menu items for each restaurant ❌.
+3. The mock data should contain at least 10 restaurants and 10 menu items for each restaurant ✅.
 
 4. A user should be able to search by (restaurant name ✅) and (food name ✅). 
 
@@ -12,7 +12,7 @@
 
 7. There is no payment process. ✅
 
-8.  - The app should have the user’s location and the restaurants’ locations. ❌
+8.  - The app should have the user’s location and the restaurants’ locations. ✅
     - It should estimate the time of arrival of the delivery by assuming that the rider can travel in a straight line from the restaurant to the user at a speed of 50 km/h. ❌
     - The order should have the “in progress” status during this time. A user can only have one order active at a time ❌.
     - The app should not let them search or place another order until the current one is completed ❌.

@@ -3,13 +3,14 @@ import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Alert } from 'r
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from './connect';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { extractLatLng } from '../utils/locationUtils';
 
 const DeliveryPage = ({ route }) => {
   const navigation = useNavigation();
-  const { orderItems = [], total = 0, restaurantId } = route.params || {};
+  const { orderItems = [], total = 0, restaurantId, locationLink, Userlatitude, Userlongitude } = route.params || {};
   const [isHistoryRecorded, setIsHistoryRecorded] = useState(false);
-  const [currentStage, setCurrentStage] = useState(0); // 0: in progress, 1: making dishes, 2: delivery
-  const [timeLeft, setTimeLeft] = useState(22 * 60); // 22 minutes in seconds
+  const [currentStage, setCurrentStage] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(22 * 60);
 
   const estimatedTime = '22 Min';
   const orderId = '#15536';
@@ -31,7 +32,6 @@ const DeliveryPage = ({ route }) => {
         return newTime > 0 ? newTime : 0;
       });
     }, 1000);
-
     return () => clearInterval(timer);
   }, []);
 
@@ -75,6 +75,21 @@ const DeliveryPage = ({ route }) => {
 
     recordHistory();
   }, [restaurantId, isHistoryRecorded]);
+
+  useEffect(() => {
+    if (locationLink) {
+      const coords = extractLatLng(locationLink);
+      if (coords) {
+        console.log(`Restaurant ID: ${restaurantId}`);
+        console.log(`Latitude: ${coords.lat}`);
+        console.log(`Longitude: ${coords.lng}`);
+        console.log(`User Latitude: ${Userlatitude}`);
+        console.log(`User Longitude: ${Userlongitude}`);
+      } else {
+        console.error('Could not extract coordinates from location link');
+      }
+    }
+  }, [locationLink, restaurantId]);
 
   const handleBackToHomepage = () => {
     navigation.navigate('Homepage');

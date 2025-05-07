@@ -38,3 +38,8 @@ npm install -g expo-cli
 
 # Development & Testing
 npm install --save-dev jest @testing-library/react-native
+
+# Location
+npx expo install expo-location
+npm install react-native-geolocation-service
+
