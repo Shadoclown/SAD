@@ -39,6 +39,13 @@ export const calculateDeliveryTime = (coords1, coords2) => {
   const distance = haversineDistance(coords1, coords2);
   const speedKmH = 50; // Average speed in km/h
   const timeHours = distance / speedKmH;
-  const timeMinutes = Math.ceil(timeHours * 60); // Convert to minutes and round up
-  return timeMinutes;
+  const travelMinutes = Math.ceil(timeHours * 60);
+  
+  // Add preparation time based on distance
+  const basePreparationTime = 10; // Base preparation time in minutes
+  const additionalTimePerKm = 0.5; // Additional minute per kilometer for longer distances
+  const preparationTime = Math.ceil(basePreparationTime + (distance * additionalTimePerKm));
+  
+  // Total time is preparation time plus travel time
+  return preparationTime + travelMinutes;
 };

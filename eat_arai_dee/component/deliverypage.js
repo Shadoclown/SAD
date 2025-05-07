@@ -32,6 +32,13 @@ const DeliveryPage = ({ route }) => {
         const deliveryTime = calculateDeliveryTime(restaurantCoords, userCoords);
         setEstimatedMinutes(deliveryTime);
         setTimeLeft(deliveryTime * 60); // Convert minutes to seconds for countdown
+        
+        // Log the calculated time for debugging
+        console.log(`Estimated delivery time: ${deliveryTime} minutes`);
+        console.log(`Distance calculation params:`, {
+          restaurant: restaurantCoords,
+          user: userCoords
+        });
       }
     }
   }, [locationLink, Userlatitude, Userlongitude]);
@@ -39,8 +46,8 @@ const DeliveryPage = ({ route }) => {
   const estimatedTime = `${estimatedMinutes} Min`;
   const orderId = '#15536';
 
-  const stageOneTime = estimatedMinutes * 60 * 0.25; // 25% of total time
-  const stageTwoTime = estimatedMinutes * 60 * 0.75; // 75% of total time
+  const stageOneTime = timeLeft * 0.4; // 40% of total time for preparation
+  const stageTwoTime = timeLeft * 0.6; // 60% of total time for delivery
 
   // Get initial user ID and status
   useEffect(() => {
