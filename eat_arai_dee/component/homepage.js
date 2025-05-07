@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from "react-native";
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, TextInput } from "react-native";
 import React, { useEffect, useState } from "react";
 import Card from "./card";
 import { supabase } from "./connect";
@@ -8,6 +8,8 @@ function Homepage({ navigation, userId, filter_preferences, filter_allergies, fi
   const [random, setRandom] = useState(false);
   const [israndom, setIsRandom] = useState();
   const [restaurant, setRestaurant] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredRestaurants, setFilteredRestaurants] = useState([]);
 
   useEffect(() => {
     async function fetchRestaurants() {
@@ -26,6 +28,7 @@ function Homepage({ navigation, userId, filter_preferences, filter_allergies, fi
           console.error('Error fetching restaurants:', error);
         } else {
           setRestaurant(data);
+          setFilteredRestaurants(data);
         }
       } catch (error) {
         console.error('Error in fetchRestaurants:', error);
@@ -35,6 +38,23 @@ function Homepage({ navigation, userId, filter_preferences, filter_allergies, fi
     fetchRestaurants();
   }, [userId, filter_preferences, filter_allergies, filter_costRange, filter_spiceLevel]);
   
+  // Search functionality
+  useEffect(() => {
+    if (searchQuery.trim() === '') {
+      setFilteredRestaurants(restaurant);
+    } else {
+      const lowercaseQuery = searchQuery.toLowerCase();
+      const results = restaurant.filter(item => 
+        item.restaurant_name.toLowerCase().includes(lowercaseQuery)
+      );
+      setFilteredRestaurants(results);
+    }
+    // When searching, disable random selection mode
+    if (searchQuery.trim() !== '') {
+      setRandom(false);
+    }
+  }, [searchQuery, restaurant]);
+
   async function handleRandom() {
     if (!restaurant || restaurant.length === 0) {
       console.error("No restaurants available for random selection.");
@@ -43,6 +63,7 @@ function Homepage({ navigation, userId, filter_preferences, filter_allergies, fi
     const randomIndex = Math.floor(Math.random() * restaurant.length);
     setRandom(true);
     setIsRandom(restaurant[randomIndex]);
+    setSearchQuery(''); // Clear search when using random
     console.log("Random restaurant selected:", restaurant[randomIndex]);
   }
 
@@ -69,6 +90,17 @@ function Homepage({ navigation, userId, filter_preferences, filter_allergies, fi
   return (
     <ScrollView>
       <View style={styles.homepage}>
+        {/* Search Bar */}
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search restaurants..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            clearButtonMode="while-editing"
+          />
+        </View>
+
         <View style={styles.tri_icon}>
           <View style={styles.utensil_icon}>
             <Image
@@ -101,9 +133,13 @@ function Homepage({ navigation, userId, filter_preferences, filter_allergies, fi
           </TouchableOpacity>
         </View>
 
-        {random == true ? (
+        {random ? (
           <View style={styles.above_text}>
             <Text style={styles.text_text}>Random Restaurant</Text>
+          </View>
+        ) : searchQuery.trim() !== '' ? (
+          <View style={styles.above_text}>
+            <Text style={styles.text_text}>Search Results</Text>
           </View>
         ) : (
           <View style={styles.above_text}>
@@ -131,7 +167,7 @@ function Homepage({ navigation, userId, filter_preferences, filter_allergies, fi
             />
           </>
         ) : (
-          shuffleRecommend().map((restaurant, index) => (
+          filteredRestaurants.map((restaurant, index) => (
             <Card
               key={`${restaurant.restaurant_id}-${index}`}
               name={restaurant.restaurant_name}
@@ -160,6 +196,25 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     backgroundColor: '#f0f8ff',
+  },
+  searchContainer: {
+    width: '90%',
+    marginTop: 10,
+    marginBottom: 5,
+  },
+  searchInput: {
+    backgroundColor: 'white',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    fontSize: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   tri_icon: {
     flexDirection: "row",
