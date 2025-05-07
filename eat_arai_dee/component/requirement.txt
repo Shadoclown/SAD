@@ -1,0 +1,27 @@
+1. Must have a signup and login page. ✅
+
+2. There is only one role: user. There is no need for the rider’s version of the app. ✅
+
+3. The mock data should contain at least 10 restaurants and 10 menu items for each restaurant.
+   You may not use any of the data from the in-class example. ❌
+
+4. A user should be able to search by (restaurant name ✅) and (food name ❌). 
+
+5. There is a cart system where a user can add multiple items from the same restaurant. ✅
+
+6. A user should be able to confirm order and see the total amount of their cart. ✅
+
+7. There is no payment process. ✅
+
+8. The app should have the user’s location and the restaurants’ locations. It should estimate the time of arrival of the delivery
+by assuming that the rider can travel in a straight line from the restaurant to the user at a speed of 50 km/h. The order should
+have the “in progress” status during this time. A user can only have one order active at a time. The app should not let them search
+or place another order until the current one is completed. ❌
+
+9. Once the estimated delivery time has passed, the order is automatically completed. ❌
+
+10. There is no need for the admin system such as editing the information of the
+restaurants or the food items. ✅
+
+NOTE:
+-Fix open/close time for restaurant in history? There're seconds in the time.
