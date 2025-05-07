@@ -37,7 +37,7 @@ export const haversineDistance = (coords1, coords2) => {
 
 export const calculateDeliveryTime = (coords1, coords2) => {
   const distance = haversineDistance(coords1, coords2);
-  const speedKmH = 50; // Average speed in km/h
+  const speedKmH = 5000; // Average speed in km/h
   const timeHours = distance / speedKmH;
   const travelMinutes = Math.ceil(timeHours * 60);
   

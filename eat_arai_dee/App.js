@@ -77,16 +77,18 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName="Homepage"
-        screenOptions={{
+        screenOptions={({ route }) => ({
           header: (props) => (
-            <CustomHeader 
-              {...props} 
-              isLogin={isLogin} 
-              setIsLogin={setIsLogin} 
-              userId={userId} 
-            />
+            route.name === 'DeliveryPage' ? null : (
+              <CustomHeader 
+                {...props} 
+                isLogin={isLogin} 
+                setIsLogin={setIsLogin} 
+                userId={userId} 
+              />
+            )
           ),
-        }}
+        })}
       >
         <Stack.Screen name="Homepage">
           {(props) => (
