@@ -22,7 +22,7 @@ export const extractLatLng = (url) => {
 
 export const haversineDistance = (coords1, coords2) => {
   const toRad = (x) => (x * Math.PI) / 180;
-  const R = 100; // Earth radius in kilometers
+  const R = 6371; // Earth radius in kilometers
 
   const dLat = toRad(coords2.latitude - coords1.latitude);
   const dLon = toRad(coords2.longitude - coords1.longitude);
