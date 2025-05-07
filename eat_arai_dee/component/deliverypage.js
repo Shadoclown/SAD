@@ -270,6 +270,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
+    marginTop: 10,
     backgroundColor: '#f0f8ff',
   },
   header: {
