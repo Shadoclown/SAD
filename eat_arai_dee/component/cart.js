@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, TextInput, ScrollView, StyleSheet, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from './connect';
 import * as Location from 'expo-location';
 
@@ -9,7 +10,22 @@ const Cart = ({ navigation, route }) => {
   const [specialInstructions, setSpecialInstructions] = useState('');
   const [itemToRemove, setItemToRemove] = useState(null);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
-  
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const getUserId = async () => {
+      try {
+        const id = await AsyncStorage.getItem('userId');
+        if (id) {
+          setUserId(id);
+        }
+      } catch (error) {
+        console.error('Error fetching user ID:', error);
+      }
+    };
+    getUserId();
+  }, []);
+
   const updateQuantity = (id, newQuantity) => {
     if (newQuantity === 0) {
       const itemToBeRemoved = orderItems.find(item => 
@@ -83,6 +99,10 @@ const Cart = ({ navigation, route }) => {
       }
 
       console.log('Restaurant location link:', data.location_link);
+
+
+      const { data: userData } = await supabase.from('user').update({order_status: true}).eq('user_id', userId).single();
+
 
       // Navigate with both locations
       navigation.navigate('DeliveryPage', {

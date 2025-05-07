@@ -10,7 +10,10 @@ const DeliveryPage = ({ route }) => {
   const { orderItems = [], total = 0, restaurantId, locationLink, Userlatitude, Userlongitude } = route.params || {};
   const [isHistoryRecorded, setIsHistoryRecorded] = useState(false);
   const [currentStage, setCurrentStage] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(22 * 60);
+  const [status, setStatus] = useState(null);
+  const [UserId, setUserId] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(0.2 * 60);
+  const [hasAlerted, setHasAlerted] = useState(false);
 
   const estimatedTime = '22 Min';
   const orderId = '#15536';
@@ -18,22 +21,86 @@ const DeliveryPage = ({ route }) => {
   const stageOneTime = 22 * 60 * 0.25; // 25% of total time
   const stageTwoTime = 22 * 60 * 0.75; // 75% of total time
 
+  // Get initial user ID and status
   useEffect(() => {
+    const initializeData = async () => {
+      try {
+        const id = await AsyncStorage.getItem('userId');
+        if (id) {
+          setUserId(id);
+          const { data } = await supabase
+            .from('user')
+            .select('order_status')
+            .eq('user_id', id)
+            .single();
+          if (data) {
+            setStatus(data.order_status);
+          }
+        }
+      } catch (error) {
+        console.error('Error initializing data:', error);
+      }
+    };
+    initializeData();
+  }, []);
+
+  // Timer effect
+  useEffect(() => {
+    if (!UserId) return;
+
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         const newTime = prev - 1;
         
         if (newTime <= stageOneTime) {
-          setCurrentStage(2); // Delivery phase
+          setCurrentStage(2);
         } else if (newTime <= stageTwoTime) {
-          setCurrentStage(1); // Making dishes phase
+          setCurrentStage(1);
         }
 
         return newTime > 0 ? newTime : 0;
       });
     }, 1000);
+
     return () => clearInterval(timer);
-  }, []);
+  }, [UserId]);
+
+  // Separate effect for handling order completion
+  useEffect(() => {
+    const handleOrderCompletion = async () => {
+      if (timeLeft <= 0 && !hasAlerted && UserId) {
+        await updateOrderStatus();
+        setHasAlerted(true);
+        Alert.alert("Order Status", "Your order has been delivered!");
+      }
+    };
+
+    handleOrderCompletion();
+  }, [timeLeft, hasAlerted, UserId]);
+
+  const updateOrderStatus = async () => {
+    if (!UserId) return;
+    
+    try {
+      await supabase
+        .from('user')
+        .update({ order_status: false })
+        .eq('user_id', UserId)
+        .single();
+      
+      const { data } = await supabase
+        .from('user')
+        .select('order_status')
+        .eq('user_id', UserId)
+        .single();
+      
+      if (data) {
+        setStatus(data.order_status);
+      }
+    } catch (error) {
+      console.error('Error updating order status:', error);
+    }
+  };
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -159,8 +226,7 @@ const DeliveryPage = ({ route }) => {
 
       <TouchableOpacity 
         style={styles.homeButton}
-        onPress={handleBackToHomepage}
-      >
+        onPress={() => !status ? handleBackToHomepage() : Alert.alert("Order Status", "You have to finish your order first!")}>
         <Text style={styles.homeButtonText}>Back to Homepage</Text>
       </TouchableOpacity>
     </SafeAreaView>
