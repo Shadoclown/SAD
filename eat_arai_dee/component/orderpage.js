@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, Alert } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, Alert, Animated } from 'react-native';
 import { supabase } from './connect';
 
 const OrderPage = ({ route, navigation }) => {
@@ -7,6 +7,9 @@ const OrderPage = ({ route, navigation }) => {
   const { restaurantId, restaurantName, restaurantImage } = route.params || {};
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationText, setNotificationText] = useState('');
+  const [fadeAnim] = useState(new Animated.Value(0));
 
   useEffect(() => {
     const fetchMenuItems = async () => {
@@ -62,6 +65,29 @@ const OrderPage = ({ route, navigation }) => {
     fetchMenuItems();
   }, [restaurantId]);
 
+  const showPopupNotification = (text) => {
+    setNotificationText(text);
+    setShowNotification(true);
+    
+    // Fade in
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true
+    }).start();
+    
+    // Automatically hide after 2 seconds
+    setTimeout(() => {
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true
+      }).start(() => {
+        setShowNotification(false);
+      });
+    }, 2000);
+  };
+
   const addToCart = (item) => {
     setCartItems(prevItems => {
       // Check if item already exists in cart
@@ -82,10 +108,8 @@ const OrderPage = ({ route, navigation }) => {
       }
     });
 
-    Alert.alert(
-      "Added to Cart", 
-      `${item.name || item.menu_name} added to your cart.`
-    );
+    // Show custom notification
+    showPopupNotification(`${item.name || item.menu_name} added to cart`);
   };
 
   const goToCart = () => {
@@ -159,6 +183,17 @@ const OrderPage = ({ route, navigation }) => {
           </TouchableOpacity>
         </>
       )}
+
+      {showNotification && (
+        <Animated.View 
+          style={[
+            styles.notificationContainer, 
+            { opacity: fadeAnim }
+          ]}
+        >
+          <Text style={styles.notificationText}>{notificationText}</Text>
+        </Animated.View>
+      )}
     </SafeAreaView>
   );
 };
@@ -166,7 +201,7 @@ const OrderPage = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#f0f8ff',
   },
   headerContainer: {
     backgroundColor: '#ffffff',
@@ -283,6 +318,28 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 16,
     color: '#666',
+  },
+  notificationContainer: {
+    position: 'absolute',
+    top: 100,
+    alignSelf: 'center',
+    backgroundColor: '#3498db',
+    borderRadius: 15,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    zIndex: 1000,
+    minWidth: 200,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 6,
+  },
+  notificationText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });
 

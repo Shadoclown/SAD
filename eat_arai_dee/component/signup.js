@@ -100,7 +100,7 @@ function Signup({ navigation }) {
                     style={styles.signup_button} 
                     onPress={() => navigation.navigate('Login')}
                 >
-                    <Text style={styles.signup}>Already have account?  <Text style={{color: '#007BFF',}}>Login</Text></Text>
+                    <Text style={styles.signup}>Already have account?  <Text style={{color: '#3498db',}}>Login</Text></Text>
                 </TouchableOpacity>
             </View>
         </ScrollView>
@@ -112,6 +112,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         padding: 20,
+        backgroundColor: '#f0f8ff',
     },
     headerBar: {
         width: '100%',
@@ -124,7 +125,8 @@ const styles = StyleSheet.create({
     },
     backButtonText: {
         fontSize: 16,
-        color: '#007BFF',
+        color: '#3498db',
+        fontWeight: 'bold',
     },
     tri_icon: {
         flexDirection: 'row',
@@ -135,32 +137,50 @@ const styles = StyleSheet.create({
         height: 100,
     },
     utensil_icon: {
-        backgroundColor: 'lightblue',
+        backgroundColor: '#3498db',
         borderRadius: 50,
-        padding: 10,
+        padding: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 4,
     },
     chef_icon: {
-        backgroundColor: 'lightblue',
+        backgroundColor: '#3498db',
         borderRadius: 50,
-        padding: 10,
+        padding: 12,
         marginBottom: 60,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 4,
     },
     location_icon: {
-        backgroundColor: 'lightblue',
+        backgroundColor: '#3498db',
         borderRadius: 50,
-        padding: 10,
+        padding: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 4,
     },
     utensil_icon_image: {
         width: 35,
         height: 35,
+        tintColor: '#fff',
     },
     chef_icon_image: {
         width: 35,
         height: 35,
+        tintColor: '#fff',
     },
     location_icon_image: {
         width: 35,
         height: 35,
+        tintColor: '#fff',
     },
     name_slogan: {
         alignItems: 'center',
@@ -169,42 +189,41 @@ const styles = StyleSheet.create({
         marginBottom: 30,
     },
     homepage_name: {
-        fontSize: 25,
+        fontSize: 28,
         fontWeight: 'bold',
+        color: '#2c3e50',
     },
     homepage_slogan: {
-        fontSize: 15,
-        color: 'gray',
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
+        fontSize: 16,
+        color: '#666',
     },
     input: {
         width: '100%',
-        height: 50,
+        height: 55,
         borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 10,
+        borderColor: '#ddd',
+        borderRadius: 12,
         paddingHorizontal: 15,
-        marginBottom: 15,
+        marginBottom: 18,
         backgroundColor: '#fff',
-    },
-    forgot: {
-        color: '#007BFF',
-        fontSize: 16,
-        marginBottom: 40,
-        marginLeft: 200,
-        marginTop: -10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 2,
     },
     button: {
         width: '100%',
-        height: 50,
-        backgroundColor: '#007BFF',
+        height: 55,
+        backgroundColor: '#ff9900',
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 10,
+        borderRadius: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 5,
     },
     buttonText: {
         color: '#fff',
@@ -222,10 +241,11 @@ const styles = StyleSheet.create({
         height: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 10,
+        borderRadius: 12,
     },
     signup: {
         fontWeight: 'bold',
+        fontSize: 16,
     },
 });
 

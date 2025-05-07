@@ -164,7 +164,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     paddingTop: 40,
-    backgroundColor: 'rgb(223, 240, 255)',
+    backgroundColor: '#f0f8ff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
   },
   navbar_logo: {
     flexDirection: 'row',
@@ -174,15 +181,17 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   navbar_logo_E: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
-    padding: 5,
-    backgroundColor: 'lightblue',
-    color: 'blue',
-    borderRadius: 5,
+    padding: 7,
+    backgroundColor: '#3498db',
+    color: 'white',
+    borderRadius: 8,
   },
   navbar_logo_text: {
-    fontSize: 18
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
   },
   navbar_icon: {
     flexDirection: 'row',
@@ -193,9 +202,9 @@ const styles = StyleSheet.create({
   navbar_icon_filter: {
     width: 40,
     height: 40,
-    backgroundColor: 'lightblue',
+    // backgroundColor: '#3498db',
     padding: 8,
-    borderRadius: 50
+    borderRadius: 50,
   },
   navbar_icon_profile: {
     width: 40,

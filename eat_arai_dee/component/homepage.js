@@ -133,7 +133,7 @@ function Homepage({ navigation, userId, filter_preferences, filter_allergies, fi
         ) : (
           shuffleRecommend().map((restaurant, index) => (
             <Card
-              key={`${restaurant.restaurant_id}-${index}`} // Ensure a unique key
+              key={`${restaurant.restaurant_id}-${index}`}
               name={restaurant.restaurant_name}
               location={restaurant.location}
               rating={restaurant.rating}
@@ -159,6 +159,7 @@ const styles = StyleSheet.create({
   homepage: {
     flex: 1,
     alignItems: "center",
+    backgroundColor: '#f0f8ff',
   },
   tri_icon: {
     flexDirection: "row",
@@ -169,32 +170,50 @@ const styles = StyleSheet.create({
     height: 100,
   },
   utensil_icon: {
-    backgroundColor: "lightblue",
+    backgroundColor: "#3498db",
     borderRadius: 50,
-    padding: 10,
+    padding: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
   },
   chef_icon: {
-    backgroundColor: "lightblue",
+    backgroundColor: "#3498db",
     borderRadius: 50,
-    padding: 10,
+    padding: 12,
     marginBottom: 60,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
   },
   location_icon: {
-    backgroundColor: "lightblue",
+    backgroundColor: "#3498db",
     borderRadius: 50,
-    padding: 10,
+    padding: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
   },
   utensil_icon_image: {
     width: 35,
     height: 35,
+    tintColor: '#fff',
   },
   chef_icon_image: {
     width: 35,
     height: 35,
+    tintColor: '#fff',
   },
   location_icon_image: {
     width: 35,
     height: 35,
+    tintColor: '#fff',
   },
   name_slogan: {
     alignItems: "center",
@@ -202,54 +221,26 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   homepage_name: {
-    fontSize: 25,
+    fontSize: 28,
     fontWeight: "bold",
+    color: '#2c3e50',
   },
   homepage_slogan: {
-    fontSize: 15,
-    color: "gray",
-  },
-  individual_group_filter: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    marginTop: 20,
-    padding: 5,
-    gap: 5,
-    borderRadius: 15,
-    borderWidth: 2,
-    borderColor: "white",
-    backgroundColor: "lightgray",
-  },
-  individual_filter: {
-    alignItems: "center",
-    width: 110,
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-  },
-  group_filter: {
-    alignItems: "center",
-    width: 110,
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-  },
-  selected_filter: {
-    backgroundColor: "white",
-    color: "black",
-  },
-  filter_text: {
-    color: "black",
-    fontWeight: "bold",
+    fontSize: 16,
+    color: "#666",
   },
   homepage_random: {
-    backgroundColor: "rgb(49, 159, 255)",
+    backgroundColor: "#ff9900",
     alignItems: "center",
     marginTop: 30,
-    padding: 20,
+    padding: 18,
     borderRadius: 15,
     width: "60%",
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
   },
   random_button: {
     color: "white",
@@ -261,8 +252,9 @@ const styles = StyleSheet.create({
     marginBottom: -8,
   },
   text_text: {
-    fontSize: 25,
+    fontSize: 26,
     fontWeight: 'bold',
+    color: '#2c3e50',
   }
 });
 

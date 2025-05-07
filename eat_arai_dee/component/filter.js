@@ -166,7 +166,7 @@ function Filter({ navigation, setFilters }) {
 const styles = StyleSheet.create({
     filter_container: {
         flex: 1,
-        backgroundColor: 'rgb(223, 240, 255)',
+        backgroundColor: '#f0f8ff',
         padding: 20,
         gap: 20,
     },
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
         maxWidth: '95%',
         height: 1,
         marginInline: 5,
-        backgroundColor: 'rgb(89, 89, 89)',
+        backgroundColor: '#e0e0e0',
     },
     food_preference: {
         flexDirection: 'column',
@@ -188,19 +188,33 @@ const styles = StyleSheet.create({
     food_preference_item: {
         backgroundColor: 'white',
         flexDirection: 'row',
-        padding: 10,
-        borderRadius: 10,
+        padding: 12,
+        borderRadius: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 2,
     },
     colorfoodPreference: {
-        backgroundColor: 'lightblue',
+        backgroundColor: '#3498db',
+    },
+    food_preference_text: {
+        color: '#333',
+        fontWeight: '500',
     },
     homepage_random: {
-        backgroundColor: 'rgb(49, 159, 255)',
+        backgroundColor: '#ff9900',
         alignItems: 'center',
         marginTop: 30,
-        padding: 20,
+        padding: 18,
         borderRadius: 15,
         width: '100%',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 5,
     },
     random_button: {
         color: 'white',
@@ -212,14 +226,16 @@ const styles = StyleSheet.create({
     },
     backButtonText: {
         fontSize: 16,
-        color: '#007BFF',
+        color: '#3498db',
         fontWeight: 'bold',
     },
     headerBar: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 10,
+        padding: 15,
         backgroundColor: '#ffffff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#e0e0e0',
     },
 });
 

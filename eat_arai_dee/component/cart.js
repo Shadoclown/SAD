@@ -4,17 +4,18 @@ import { View, Text, TouchableOpacity, TextInput, ScrollView, StyleSheet } from 
 const Cart = ({ navigation, route }) => {
   const { cartItems: initialCartItems = [], restaurantId } = route.params || {};
   const [orderItems, setOrderItems] = useState(initialCartItems);
-  
   const [specialInstructions, setSpecialInstructions] = useState('');
+  const [itemToRemove, setItemToRemove] = useState(null);
+  const [confirmationVisible, setConfirmationVisible] = useState(false);
   
   const updateQuantity = (id, newQuantity) => {
     if (newQuantity === 0) {
-      // Remove item from cart when quantity reaches 0
-      setOrderItems(prevItems => 
-        prevItems.filter(item => 
-          (item.id || item.menu_id) !== id
-        )
+      const itemToBeRemoved = orderItems.find(item => 
+        (item.id || item.menu_id) === id
       );
+      
+      setItemToRemove(itemToBeRemoved);
+      setConfirmationVisible(true);
     } else {
       setOrderItems(prevItems => 
         prevItems.map(item => 
@@ -24,6 +25,23 @@ const Cart = ({ navigation, route }) => {
         )
       );
     }
+  };
+  
+  const confirmRemoveItem = () => {
+    if (itemToRemove) {
+      setOrderItems(prevItems => 
+        prevItems.filter(item => 
+          (item.id || item.menu_id) !== (itemToRemove.id || itemToRemove.menu_id)
+        )
+      );
+    }
+    
+    hideConfirmation();
+  };
+  
+  const hideConfirmation = () => {
+    setConfirmationVisible(false);
+    setItemToRemove(null);
   };
   
   const calculateTotal = () => {
@@ -37,12 +55,11 @@ const Cart = ({ navigation, route }) => {
   const handleConfirmOrder = () => {
     console.log('Order confirmed!', { orderItems, specialInstructions, total: calculateTotal(), restaurantId });
     
-    // Navigate to the DeliveryPage with order details
     navigation.navigate('DeliveryPage', {
       orderItems, 
       total: calculateTotal(),
       specialInstructions,
-      restaurantId: restaurantId  // Ensure restaurantId is passed explicitly
+      restaurantId: restaurantId
     });
   };
 
@@ -112,6 +129,28 @@ const Cart = ({ navigation, route }) => {
           <Text style={styles.confirmButtonText}>Confirm Order</Text>
         </TouchableOpacity>
       </View>
+      
+      {confirmationVisible && (
+        <View style={styles.confirmationPanel}>
+          <Text style={styles.confirmationText}>
+            Remove item from cart?
+          </Text>
+          <View style={styles.confirmationButtons}>
+            <TouchableOpacity 
+              style={[styles.confirmationButton, styles.cancelButton]} 
+              onPress={hideConfirmation}
+            >
+              <Text style={[styles.confirmationButtonText, {color: '#333'}]}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.confirmationButton, styles.removeButton]} 
+              onPress={confirmRemoveItem}
+            >
+              <Text style={styles.confirmationButtonText}>Remove</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </View>
   );
 };
@@ -119,7 +158,7 @@ const Cart = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#f0f8ff',
   },
   headerBar: {
     flexDirection: 'row',
@@ -247,6 +286,51 @@ const styles = StyleSheet.create({
     color: '#888',
     textAlign: 'center',
     fontSize: 16,
+  },
+  confirmationPanel: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'white',
+    padding: 15,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 8,
+    zIndex: 1000,
+  },
+  confirmationText: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 15,
+    color: '#333',
+  },
+  confirmationButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+  },
+  confirmationButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 10,
+    minWidth: 100,
+    alignItems: 'center',
+  },
+  cancelButton: {
+    backgroundColor: '#e0e0e0',
+  },
+  removeButton: {
+    backgroundColor: '#ff5252',
+  },
+  confirmationButtonText: {
+    fontWeight: '600',
+    fontSize: 15,
+    color: 'white',
   },
 });
 
