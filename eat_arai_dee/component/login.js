@@ -98,6 +98,8 @@ function Login({ navigation, setIsLogin, setUserId }) {
                 <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
 
+            <View style={styles.spacer}></View>
+
             <View style={styles.footer}>
                 <TouchableOpacity 
                     style={styles.signup_button} 
@@ -114,10 +116,11 @@ function Login({ navigation, setIsLogin, setUserId }) {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flexGrow: 1,
         alignItems: 'center',
         padding: 20,
         backgroundColor: '#f0f8ff',
+        justifyContent: 'flex-start',
     },
     headerBar: {
         width: '100%',
@@ -243,11 +246,13 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
     },
-    footer: {
+    spacer: {
         flex: 1,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
+    },
+    footer: {
+        width: '100%',
         marginBottom: 20,
+        marginTop: 20,
     },
     signup_button: {
         width: '100%',

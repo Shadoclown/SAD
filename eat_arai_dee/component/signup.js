@@ -94,6 +94,8 @@ function Signup({ navigation }) {
             <TouchableOpacity style={styles.button} onPress={fetchsignup}>
                 <Text style={styles.buttonText}>Register</Text>
             </TouchableOpacity>
+            
+            <View style={styles.spacer}></View>
 
             <View style={styles.footer}>  
                 <TouchableOpacity 
@@ -109,10 +111,11 @@ function Signup({ navigation }) {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flexGrow: 1,
         alignItems: 'center',
         padding: 20,
         backgroundColor: '#f0f8ff',
+        justifyContent: 'flex-start',
     },
     headerBar: {
         width: '100%',
@@ -231,11 +234,13 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
     },
-    footer: {
+    spacer: {
         flex: 1,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
+    },
+    footer: {
+        width: '100%',
         marginBottom: 20,
+        marginTop: 20,
     },
     signup_button: {
         width: '100%',
