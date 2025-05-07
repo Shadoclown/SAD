@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Alert } from 'r
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from './connect';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { extractLatLng } from '../utils/locationUtils';
+import { extractLatLng, calculateDeliveryTime } from '../utils/locationUtils';
 
 const DeliveryPage = ({ route }) => {
   const navigation = useNavigation();
@@ -12,14 +12,35 @@ const DeliveryPage = ({ route }) => {
   const [currentStage, setCurrentStage] = useState(0);
   const [status, setStatus] = useState(null);
   const [UserId, setUserId] = useState(null);
-  const [timeLeft, setTimeLeft] = useState(0.2 * 60);
+  const [timeLeft, setTimeLeft] = useState(0);
   const [hasAlerted, setHasAlerted] = useState(false);
+  const [estimatedMinutes, setEstimatedMinutes] = useState(0);
 
-  const estimatedTime = '22 Min';
+  useEffect(() => {
+    if (locationLink && Userlatitude && Userlongitude) {
+      const coords = extractLatLng(locationLink);
+      if (coords) {
+        const restaurantCoords = {
+          latitude: coords.lat,
+          longitude: coords.lng
+        };
+        const userCoords = {
+          latitude: Userlatitude,
+          longitude: Userlongitude
+        };
+        
+        const deliveryTime = calculateDeliveryTime(restaurantCoords, userCoords);
+        setEstimatedMinutes(deliveryTime);
+        setTimeLeft(deliveryTime * 60); // Convert minutes to seconds for countdown
+      }
+    }
+  }, [locationLink, Userlatitude, Userlongitude]);
+
+  const estimatedTime = `${estimatedMinutes} Min`;
   const orderId = '#15536';
 
-  const stageOneTime = 22 * 60 * 0.25; // 25% of total time
-  const stageTwoTime = 22 * 60 * 0.75; // 75% of total time
+  const stageOneTime = estimatedMinutes * 60 * 0.25; // 25% of total time
+  const stageTwoTime = estimatedMinutes * 60 * 0.75; // 75% of total time
 
   // Get initial user ID and status
   useEffect(() => {

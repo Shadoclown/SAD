@@ -19,3 +19,26 @@ export const extractLatLng = (url) => {
 
   return null;
 };
+
+export const haversineDistance = (coords1, coords2) => {
+  const toRad = (x) => (x * Math.PI) / 180;
+  const R = 100; // Earth radius in kilometers
+
+  const dLat = toRad(coords2.latitude - coords1.latitude);
+  const dLon = toRad(coords2.longitude - coords1.longitude);
+  const lat1 = toRad(coords1.latitude);
+  const lat2 = toRad(coords2.latitude);
+
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c; // Distance in km
+};
+
+export const calculateDeliveryTime = (coords1, coords2) => {
+  const distance = haversineDistance(coords1, coords2);
+  const speedKmH = 50; // Average speed in km/h
+  const timeHours = distance / speedKmH;
+  const timeMinutes = Math.ceil(timeHours * 60); // Convert to minutes and round up
+  return timeMinutes;
+};
