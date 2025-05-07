@@ -1,6 +1,10 @@
 # Required Dependencies for Eat Arai Dee Project
 
-# Supabase
+## Core Dependencies
+npm install react-native
+
+## Backend & Data
+# Supabase - Backend as a Service
 npm install @supabase/supabase-js
 
 # Local storage
@@ -10,20 +14,27 @@ npm install @react-native-async-storage/async-storage
 npm install date-fns date-fns-tz
 
 ## Navigation
+# Web navigation (if using web version)
 npm install react-router-dom
 
 # React Navigation for mobile navigation
 npm install @react-navigation/native
 npm install @react-navigation/stack @react-navigation/bottom-tabs @react-navigation/drawer
-npm install react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-reanimated 
+npm install react-native-screens react-native-safe-area-context
 
-# UI Components
-npm install react-native-vector-icons
+# Gesture handling (required for navigation)
+npm install react-native-gesture-handler react-native-reanimated
 
 ## Image Handling
 npm install expo-image-picker
 npm install expo-image
 
+## Map Integration
+npm install react-native-maps  # For restaurant location maps
+
 ## Development Tools
-# Only if needed for Expo CLI
+# Expo CLI (optional)
 npm install -g expo-cli
+
+# Development & Testing
+npm install --save-dev jest @testing-library/react-native
