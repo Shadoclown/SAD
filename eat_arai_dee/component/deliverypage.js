@@ -193,7 +193,7 @@ const DeliveryPage = ({ route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerBar}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => !status ? navigation.goBack() : Alert.alert("Order Status", "You have to finish your order first!")} style={styles.backButton}>
           <Text style={styles.backButtonText}>← Back</Text>
         </TouchableOpacity>
       </View>

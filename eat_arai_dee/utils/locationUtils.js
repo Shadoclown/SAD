@@ -22,7 +22,7 @@ export const extractLatLng = (url) => {
 
 export const haversineDistance = (coords1, coords2) => {
   const toRad = (x) => (x * Math.PI) / 180;
-  const R = 6371; // Earth radius in kilometers
+  const R = 6371; // Earth radius in kilometers 6371
 
   const dLat = toRad(coords2.latitude - coords1.latitude);
   const dLon = toRad(coords2.longitude - coords1.longitude);
@@ -41,11 +41,6 @@ export const calculateDeliveryTime = (coords1, coords2) => {
   const timeHours = distance / speedKmH;
   const travelMinutes = Math.ceil(timeHours * 60);
   
-  // Add preparation time based on distance
-  const basePreparationTime = 10; // Base preparation time in minutes
-  const additionalTimePerKm = 0.5; // Additional minute per kilometer for longer distances
-  const preparationTime = Math.ceil(basePreparationTime + (distance * additionalTimePerKm));
-  
   // Total time is preparation time plus travel time
-  return preparationTime + travelMinutes;
+  return travelMinutes;
 };
