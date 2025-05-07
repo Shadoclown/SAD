@@ -10,6 +10,7 @@ function Homepage({ navigation, userId, filter_preferences, filter_allergies, fi
   const [restaurant, setRestaurant] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
+  const [menuItems, setMenuItems] = useState([]);
 
   useEffect(() => {
     async function fetchRestaurants() {
@@ -35,25 +36,68 @@ function Homepage({ navigation, userId, filter_preferences, filter_allergies, fi
       }
     }
 
+    // Fetch all menu items for searching
+    async function fetchMenuItems() {
+      try {
+        const { data, error } = await supabase
+          .from('menu')
+          .select('menu_id, menu_name, restaurant_id');
+
+        if (error) {
+          console.error('Error fetching menu items:', error);
+        } else {
+          setMenuItems(data || []);
+        }
+      } catch (error) {
+        console.error('Error in fetchMenuItems:', error);
+      }
+    }
+
     fetchRestaurants();
+    fetchMenuItems();
   }, [userId, filter_preferences, filter_allergies, filter_costRange, filter_spiceLevel]);
   
-  // Search functionality
+  // Search functionality - now includes menu items
   useEffect(() => {
     if (searchQuery.trim() === '') {
       setFilteredRestaurants(restaurant);
     } else {
       const lowercaseQuery = searchQuery.toLowerCase();
-      const results = restaurant.filter(item => 
+      
+      // First, find restaurants by name
+      const restaurantResults = restaurant.filter(item => 
         item.restaurant_name.toLowerCase().includes(lowercaseQuery)
       );
-      setFilteredRestaurants(results);
+      
+      // Then, find restaurants by menu items
+      const matchingMenuItems = menuItems.filter(item =>
+        item.menu_name.toLowerCase().includes(lowercaseQuery)
+      );
+      
+      // Get unique restaurant IDs from matching menu items
+      const matchingRestaurantIds = [...new Set(matchingMenuItems.map(item => item.restaurant_id))];
+      
+      // Find restaurants by these IDs
+      const menuMatchedRestaurants = restaurant.filter(item =>
+        matchingRestaurantIds.includes(item.restaurant_id)
+      );
+      
+      // Combine both results and remove duplicates
+      const combinedResults = [...restaurantResults];
+      
+      menuMatchedRestaurants.forEach(item => {
+        if (!combinedResults.some(r => r.restaurant_id === item.restaurant_id)) {
+          combinedResults.push(item);
+        }
+      });
+      
+      setFilteredRestaurants(combinedResults);
     }
     // When searching, disable random selection mode
     if (searchQuery.trim() !== '') {
       setRandom(false);
     }
-  }, [searchQuery, restaurant]);
+  }, [searchQuery, restaurant, menuItems]);
 
   async function handleRandom() {
     if (!restaurant || restaurant.length === 0) {
