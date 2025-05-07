@@ -4,7 +4,7 @@
 
 3. The mock data should contain at least 10 restaurants and 10 menu items for each restaurant ❌.
 
-4. A user should be able to search by (restaurant name ✅) and (food name ❌). 
+4. A user should be able to search by (restaurant name ✅) and (food name ✅). 
 
 5. There is a cart system where a user can add multiple items from the same restaurant. ✅
 
